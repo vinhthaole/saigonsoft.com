@@ -46,6 +46,8 @@ import { cn } from '@/lib/utils';
 import { CurrencySwitcher } from './currency-switcher';
 
 
+import { useSiteConfig } from '@/hooks/use-site-config';
+
 export function SiteHeader() {
   const router = useRouter();
   const { toast } = useToast();
@@ -54,15 +56,8 @@ export function SiteHeader() {
   const isMobile = useIsMobile();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [config, setConfig] = useState<SiteConfig | null>(null);
-
-   useEffect(() => {
-        async function fetchConfig() {
-            const siteConfig = await getSiteConfig();
-            setConfig(siteConfig);
-        }
-        fetchConfig();
-    }, []);
+  
+  const config = useSiteConfig();
 
     const logoUrl = theme === 'dark' ? config?.header.logoDarkUrl : config?.header.logoLightUrl;
     

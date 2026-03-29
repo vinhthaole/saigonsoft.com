@@ -8,43 +8,42 @@ import Link from 'next/link';
 import { useAuth } from '@/context/auth-context';
 import { useState, useEffect } from 'react';
 import type { FooterLinkColumn } from '@/lib/types';
-import { ScrollProgress } from '@/components/scroll-progress';
+import { useSiteConfig } from '@/hooks/use-site-config';
 
+import { ScrollProgress } from '@/components/scroll-progress';
 
 function Footer() {
     const { user, userProfile } = useAuth();
+    const config = useSiteConfig();
     const [columns, setColumns] = useState<FooterLinkColumn[]>([]);
 
     useEffect(() => {
-        async function fetchConfig() {
-            const config = await getSiteConfig();
-            let footerColumns = config?.footer?.linkColumns || [];
-            
-            // Filter columns based on auth status
-            if (!user) {
-                footerColumns = footerColumns.filter(col => !col.authRequired);
-            }
-            
-            // Adjust links based on user role
-            const basePath = userProfile?.role === 'reseller' ? '/reseller' : '/profile';
-            footerColumns = footerColumns.map(column => ({
-                ...column,
-                links: column.links.map(link => {
-                    if (link.href.includes('/order-history')) {
-                        return { ...link, href: `${basePath}/order-history` };
-                    }
-                    if (link.href.includes('/downloads')) {
-                        return { ...link, href: `${basePath}/downloads` };
-                    }
-                    return link;
-                })
-            }));
-
-            setColumns(footerColumns);
+        if (!config) return;
+        let footerColumns = config?.footer?.linkColumns || [];
+        
+        // Filter columns based on auth status
+        if (!user) {
+            footerColumns = footerColumns.filter(col => !col.authRequired);
         }
-        fetchConfig();
-    }, [user, userProfile]);
-    
+        
+        // Adjust links based on user role
+        const basePath = userProfile?.role === 'reseller' ? '/reseller' : '/profile';
+        footerColumns = footerColumns.map(column => ({
+            ...column,
+            links: column.links.map(link => {
+                if (link.href.includes('/order-history')) {
+                    return { ...link, href: `${basePath}/order-history` };
+                }
+                if (link.href.includes('/downloads')) {
+                    return { ...link, href: `${basePath}/downloads` };
+                }
+                return link;
+            })
+        }));
+
+        setColumns(footerColumns);
+    }, [config, user, userProfile]);
+
     return (
         <footer className="bg-secondary/70 text-secondary-foreground mt-auto no-print">
             <div className="container py-12">
