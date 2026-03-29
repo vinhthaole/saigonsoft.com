@@ -7,6 +7,20 @@ import { collection, getDocs, query, where, doc, updateDoc, orderBy, QueryConstr
 import { revalidatePath } from 'next/cache';
 import { getOrders } from './data';
 import { serializeForClient } from './serializeForClient';
+import { getFirebaseAdminApp } from './firebase-admin';
+
+export async function resetCustomerPassword(uid: string) {
+    if (!uid) throw new Error("User ID is required.");
+    try {
+        const adminAuth = getFirebaseAdminApp().auth();
+        const temporaryPassword = Math.random().toString(36).slice(-8) + 'aA!';
+        await adminAuth.updateUser(uid, { password: temporaryPassword });
+        return { temporaryPassword };
+    } catch (error: any) {
+        console.error("Failed to reset password:", error);
+        throw new Error(error.message || "Không thể cấp lại mật khẩu.");
+    }
+}
 
 
 export async function getCustomers(

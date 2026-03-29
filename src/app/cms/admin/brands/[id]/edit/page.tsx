@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
-type NextPageProps = import('/home/user/studio/.next/types/app/cms/admin/brands/[id]/edit/page').PageProps;
+type NextPageProps = { params: Promise<{ id: string }> };
 
 async function getBrandById(id: string): Promise<Brand | null> {
     const docRef = doc(db, "brands", id);

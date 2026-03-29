@@ -448,3 +448,53 @@ export async function updateIntegrations(data: Partial<z.infer<typeof integratio
     throw new Error('Không thể cập nhật cài đặt tích hợp.');
   }
 }
+
+// =================================================================
+// API Keys Actions (AI)
+// =================================================================
+
+const apiKeysConfigSchema = z.object({
+  apiKeys: z.object({
+      google: z.object({
+          enabled: z.boolean(),
+          apiKey: z.string().optional(),
+          model: z.string().optional(),
+      }).optional(),
+  })
+});
+
+export async function updateApiKeysConfig(data: z.infer<typeof apiKeysConfigSchema>) {
+    const validatedData = apiKeysConfigSchema.parse(data);
+    try {
+        await updateSiteConfig({ apiKeys: validatedData.apiKeys });
+        revalidatePath('/');
+    } catch (error) {
+        console.error('Error updating api keys:', error);
+        throw new Error('Không thể cập nhật cấu hình API Keys.');
+    }
+}
+
+export async function testGeminiApiKey(apiKey: string): Promise<string[]> {
+    if (!apiKey) throw new Error('Vui lòng nhập khóa API.');
+    try {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+        if (!response.ok) {
+           let errorDetail = '';
+           try {
+               const errorData = await response.json();
+               errorDetail = errorData?.error?.message || '';
+           } catch {
+               // ignore json parse error
+           }
+           throw new Error(`Google API từ chối với mã lỗi: ${response.status}${errorDetail ? ` - Chi tiết: ${errorDetail}` : ''}`);
+        }
+        const data = await response.json();
+        const models = (data.models || [])
+             .map((m: any) => m.name.replace('models/', ''))
+             .filter((name: string) => name.startsWith('gemini'));
+        return models;
+    } catch (error: any) {
+        console.error('Error testing Gemini API Key:', error);
+        throw new Error(error.message || 'Khóa API không hợp lệ hoặc đã hết hạn.');
+    }
+}

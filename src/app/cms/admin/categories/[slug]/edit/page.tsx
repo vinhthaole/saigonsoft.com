@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
-type NextPageProps = import('/home/user/studio/.next/types/app/cms/admin/categories/[slug]/edit/page').PageProps;
+type NextPageProps = { params: Promise<{ slug: string }> };
 
 async function getCategoryBySlug(slug: string): Promise<Category | null> {
     const categories = await getCategories();

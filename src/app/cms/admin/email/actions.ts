@@ -11,25 +11,6 @@ import { getCustomers } from '@/lib/data';
 import { applyDiscountCode } from '@/app/cms/admin/discounts/actions';
 import { getOrders } from '@/lib/data';
 import { subDays } from 'date-fns';
-import { generateFlow } from 'genkit/flow';
-import { z as zod } from 'zod';
-import { geminiPro } from 'genkitx/googleai';
-import { Action, defineAction } from '@genkit-ai/core';
-
-// This is a placeholder for your actual email campaign generation logic.
-// You might use a Genkit flow to generate content, or simply define it here.
-export const generateEmailCampaignContent: Action<any, any> = defineAction(
-  'generateEmailCampaignContent',
-  async (input) => {
-    // In a real scenario, you'd use the input to generate content.
-    // For now, returning a dummy response.
-    return {
-      subject: "Chủ đề email được tạo tự động",
-      body: "Đây là nội dung email được tạo tự động. " + JSON.stringify(input),
-    };
-  }
-);
-
 
 const emailCampaignSchema = z.object({
   subject: z.string().min(5, "Chủ đề email phải có ít nhất 5 ký tự."),
@@ -54,7 +35,7 @@ export async function sendEmailCampaign(data: z.infer<typeof emailCampaignSchema
 
     // 2. Fetch target audience
     const allCustomers = await getCustomers('all');
-    let targetCustomers: UserProfile[] = [];
+    let targetCustomers: Customer[] = [];
 
     switch (validatedData.targetAudience) {
         case 'all':
@@ -91,7 +72,7 @@ export async function sendEmailCampaign(data: z.infer<typeof emailCampaignSchema
             targetCustomers = allCustomers;
     }
     
-    const recipients = targetCustomers.map(c => ({ email: c.email, name: c.displayName }));
+    const recipients = targetCustomers.map(c => ({ email: c.email, name: c.name }));
 
     if (recipients.length === 0) {
         throw new Error("Không tìm thấy người nhận nào cho đối tượng đã chọn.");

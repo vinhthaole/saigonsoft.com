@@ -10,15 +10,41 @@ if (process.env.NODE_ENV === 'production') {
     enableFirebaseTelemetry();
 }
 
-// Initialize Genkit with the Google AI plugin, ensuring the API key from environment variables is used.
-export const ai = genkit({
+import { getSiteConfig } from '@/lib/data';
+
+// Keep a default instance initialized with environment variables
+// This acts as an absolute fallback if DB reading fails completely.
+const defaultAi = genkit({
     plugins: [
         googleAI({ apiKey: process.env.GEMINI_API_KEY }),
     ],
 });
 
-// Helper function to get the configured AI model name as a string.
-// The `ai` object will resolve this string to the correct, authenticated model instance.
-export function getModelByName() {
-    return process.env.GEMINI_MODEL ? `googleai/${process.env.GEMINI_MODEL}` : 'googleai/gemini-2.5-flash';
+// A dynamic factory function that ensures we ALWAYS query the SiteConfig
+// before instantiating the Genkit AI. This allows the CMS to govern the API Key and model.
+export async function getDynamicAi() {
+    let apiKey = process.env.GEMINI_API_KEY;
+    let modelName = process.env.GEMINI_MODEL ? `googleai/${process.env.GEMINI_MODEL}` : 'googleai/gemini-2.5-flash';
+
+    try {
+        const config = await getSiteConfig();
+        if (config?.apiKeys?.google?.enabled && config.apiKeys.google.apiKey) {
+            apiKey = config.apiKeys.google.apiKey;
+            modelName = config.apiKeys.google.model 
+                ? `googleai/${config.apiKeys.google.model}` 
+                : 'googleai/gemini-2.5-flash';
+            
+            return {
+                ai: genkit({ plugins: [googleAI({ apiKey })] }),
+                modelName
+            };
+        }
+    } catch (e) {
+        console.error("Failed to load CMS API Config. Falling back to `.env` settings.");
+    }
+
+    return {
+        ai: defaultAi,
+        modelName
+    };
 }

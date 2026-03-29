@@ -1,25 +1,16 @@
 
 'use server';
 
-import { ai, getModelByName } from '@/ai/genkit';
+import { getDynamicAi } from '@/ai/genkit';
 import { z } from 'zod';
 import { PageContentGeneratorInputSchema, PageContentGeneratorOutputSchema, type PageContentGeneratorInput, type PageContentGeneratorOutput } from '@/lib/schemas/page-content-generator';
 
+export async function generatePageContent(input: PageContentGeneratorInput): Promise<PageContentGeneratorOutput> {
+  const { ai, modelName } = await getDynamicAi();
+  const { topic } = input;
 
-const pageContentGeneratorFlow = ai.defineFlow(
-  {
-    name: 'pageContentGeneratorFlow',
-    inputSchema: PageContentGeneratorInputSchema,
-    outputSchema: PageContentGeneratorOutputSchema,
-  },
-  async ({ topic }) => {
-    const pageContentGeneratorPrompt = ai.definePrompt({
-        name: 'pageContentGeneratorPrompt',
-        model: getModelByName(),
-        input: { schema: z.object({ topic: z.string() }) },
-        output: { schema: PageContentGeneratorOutputSchema },
-        prompt: `Bạn là một người viết nội dung chuyên nghiệp cho một trang web thương mại điện tử Việt Nam.
-Chủ đề của trang là: "{{topic}}".
+  const promptText = `Bạn là một người viết nội dung chuyên nghiệp cho một trang web thương mại điện tử Việt Nam.
+Chủ đề của trang là: "${topic}".
 
 Hãy tạo nội dung chi tiết cho trang này. Nội dung cần đầy đủ thông tin, hấp dẫn và được định dạng tốt bằng HTML.
 
@@ -28,18 +19,16 @@ Hãy tạo nội dung chi tiết cho trang này. Nội dung cần đầy đủ t
     - Bao gồm ít nhất một tiêu đề phụ (<h2>).
     - Nếu phù hợp, hãy bao gồm một danh sách (<ul>).
     - In đậm (<strong>) các điểm quan trọng.
-    - Không bao gồm thẻ <html>, <head>, hoặc <body>. Chỉ trả về nội dung cho phần body.`,
-    });
+    - Không bao gồm thẻ <html>, <head>, hoặc <body>. Chỉ trả về nội dung cho phần body.`;
 
-    const { output } = await pageContentGeneratorPrompt({ topic });
-      if (!output) {
+  const { output } = await ai.generate({
+      model: modelName,
+      prompt: promptText,
+      output: { schema: PageContentGeneratorOutputSchema }
+  });
+
+  if (!output) {
       throw new Error('AI failed to generate page content.');
-    }
-    return output;
   }
-);
-
-
-export async function generatePageContent(input: PageContentGeneratorInput): Promise<PageContentGeneratorOutput> {
-  return pageContentGeneratorFlow(input);
+  return output as PageContentGeneratorOutput;
 }

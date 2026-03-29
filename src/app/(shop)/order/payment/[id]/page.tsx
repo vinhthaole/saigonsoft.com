@@ -25,7 +25,7 @@ const formatCurrency = (amount: number) => new Intl.NumberFormat('vi-VN', {
     currency: 'VND',
 }).format(amount);
 
-type NextPageProps = import('/home/user/studio/.next/types/app/(shop)/order/payment/[id]/page').PageProps;
+type NextPageProps = { params: Promise<{ id: string }> };
 
 export default async function PaymentPage({ params }: NextPageProps) {
     const resolvedParams = await params;

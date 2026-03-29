@@ -29,7 +29,7 @@ import { serializeForClient } from "@/lib/serializeForClient";
 import { CustomerLoyaltyForm } from "./_components/customer-loyalty-form";
 import { CustomerInfoForm } from "./_components/customer-info-form";
 
-type NextPageProps = import('/home/user/studio/.next/types/app/cms/admin/customers/[id]/page').PageProps;
+type NextPageProps = { params: Promise<{ id: string }> };
 
 const formatCurrency = (amount: number) => new Intl.NumberFormat('vi-VN', {
     style: 'currency',

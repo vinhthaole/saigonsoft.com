@@ -6,7 +6,7 @@ import { OrderDetailsClient } from "./_components/order-details-client";
 import { serializeForClient } from "@/lib/serializeForClient";
 import type { Order, OrderItem, Product, ProductVariant } from "@/lib/types";
 
-type NextPageProps = import('/home/user/studio/.next/types/app/profile/order-history/[id]/page').PageProps;
+type NextPageProps = { params: Promise<{ id: string }> };
 
 type OrderItemWithDetails = OrderItem & {
   variant: ProductVariant | null;

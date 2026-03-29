@@ -9,6 +9,7 @@ import type { SiteConfig } from "@/lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { EmailTemplatesForm } from "./_components/email-templates-form";
+import { ApiKeysForm } from "./_components/api-keys-form";
 
 
 export default function AdminIntegrationsPage() {
@@ -56,12 +57,16 @@ export default function AdminIntegrationsPage() {
                 <TabsList>
                     <TabsTrigger value="provider">Cấu hình gửi Email</TabsTrigger>
                     <TabsTrigger value="templates">Mẫu Email Giao Dịch</TabsTrigger>
+                    <TabsTrigger value="artificial-intelligence">Trí Tuệ Nhân Tạo (AI)</TabsTrigger>
                 </TabsList>
                 <TabsContent value="provider" className="mt-6">
                     <IntegrationsForm initialData={config} />
                 </TabsContent>
                 <TabsContent value="templates" className="mt-6">
                     <EmailTemplatesForm initialData={config} />
+                </TabsContent>
+                <TabsContent value="artificial-intelligence" className="mt-6">
+                    <ApiKeysForm initialData={config} />
                 </TabsContent>
             </Tabs>
         </div>

@@ -6,7 +6,7 @@ import type { OrderItem, Product, Order, ProductVariant } from "@/lib/types";
 import { OrderDetailsClient } from "./_components/order-details-client";
 import { serializeForClient } from "@/lib/serializeForClient";
 
-type NextPageProps = import('/home/user/studio/.next/types/app/cms/admin/orders/[id]/page').PageProps;
+type NextPageProps = { params: Promise<{ id: string }> };
 
 type OrderItemWithDetails = OrderItem & { variant: ProductVariant | null };
 

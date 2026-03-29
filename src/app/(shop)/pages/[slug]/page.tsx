@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import type { Metadata, ResolvingMetadata } from "next";
 
-type NextPageProps = import('/home/user/studio/.next/types/app/(shop)/pages/[slug]/page').PageProps;
+type NextPageProps = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata(
     { params }: NextPageProps,

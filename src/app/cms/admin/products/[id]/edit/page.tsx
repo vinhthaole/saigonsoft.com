@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
-type NextPageProps = import('/home/user/studio/.next/types/app/cms/admin/products/[id]/edit/page').PageProps;
+type NextPageProps = { params: Promise<{ id: string }> };
 
 export default async function EditProductPage({ params }: NextPageProps) {
     const resolvedParams = await params;

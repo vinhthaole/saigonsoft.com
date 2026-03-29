@@ -5,28 +5,18 @@
  * @fileOverview An AI flow to generate content for an email marketing campaign.
  */
 
-import { ai, getModelByName } from '@/ai/genkit';
+import { getDynamicAi } from '@/ai/genkit';
 import { z } from 'zod';
 import { EmailCampaignGeneratorInputSchema, EmailCampaignGeneratorOutputSchema, type EmailCampaignGeneratorInput, type EmailCampaignGeneratorOutput } from '@/lib/schemas/email-campaign-generator';
 
-const generateCampaignFlow = ai.defineFlow(
-  {
-    name: 'generateEmailCampaignFlow',
-    inputSchema: EmailCampaignGeneratorInputSchema,
-    outputSchema: EmailCampaignGeneratorOutputSchema,
-  },
-  async (input) => {
-    const prompt = ai.definePrompt({
-      name: 'emailCampaignGeneratorPrompt',
-      model: getModelByName(),
-      input: { schema: EmailCampaignGeneratorInputSchema },
-      output: { schema: EmailCampaignGeneratorOutputSchema },
-      prompt: `Bạn là một chuyên gia marketing email cho trang web Saigonsoft.com. Nhiệm vụ của bạn là soạn một email marketing ngắn gọn, hấp dẫn và chuyên nghiệp dựa trên chủ đề được cung cấp.
+export async function generateEmailCampaign(input: EmailCampaignGeneratorInput): Promise<EmailCampaignGeneratorOutput> {
+  const { ai, modelName } = await getDynamicAi();
+  const { topic, discountCode } = input;
 
-Chủ đề: {{{topic}}}
-{{#if discountCode}}
-Mã giảm giá đính kèm: {{{discountCode}}}
-{{/if}}
+  const promptText = `Bạn là một chuyên gia marketing email cho trang web Saigonsoft.com. Nhiệm vụ của bạn là soạn một email marketing ngắn gọn, hấp dẫn và chuyên nghiệp dựa trên chủ đề được cung cấp.
+
+Chủ đề: ${topic}
+${discountCode ? `Mã giảm giá đính kèm: ${discountCode}` : ''}
 
 **Yêu cầu BẮT BUỘC:**
 1.  **subject**: Tạo một tiêu đề email hấp dẫn, ngắn gọn, có chứa emoji phù hợp (ví dụ: 🔥, ✨, 🚀).
@@ -36,19 +26,16 @@ Mã giảm giá đính kèm: {{{discountCode}}}
     - Sử dụng các thẻ HTML như <h2> cho tiêu đề chính, <h3> cho tiêu đề phụ, và <p> cho các đoạn văn.
     - Nhấn mạnh các điểm quan trọng bằng thẻ <strong>.
     - Nếu có mã giảm giá, hãy đề cập đến nó một cách tự nhiên trong nội dung email.
-    - Văn phong phải chuyên nghiệp, phù hợp với một công ty công nghệ tại Việt Nam.`,
-    });
+    - Văn phong phải chuyên nghiệp, phù hợp với một công ty công nghệ tại Việt Nam.`;
 
-    const { output } = await prompt(input);
-    if (!output) {
-      throw new Error('AI failed to generate email campaign content.');
-    }
-    return output;
+  const { output } = await ai.generate({
+      model: modelName,
+      prompt: promptText,
+      output: { schema: EmailCampaignGeneratorOutputSchema }
+  });
+
+  if (!output) {
+    throw new Error('AI failed to generate email campaign content.');
   }
-);
-
-export async function generateEmailCampaign(
-  input: EmailCampaignGeneratorInput
-): Promise<EmailCampaignGeneratorOutput> {
-  return generateCampaignFlow(input);
+  return output as EmailCampaignGeneratorOutput;
 }

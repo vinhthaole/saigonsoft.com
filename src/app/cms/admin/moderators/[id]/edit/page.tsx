@@ -4,7 +4,7 @@ import { getAdminUserById } from "@/app/cms/admin/actions";
 import { ModeratorForm } from "@/app/cms/admin/moderators/_components/moderator-form";
 import { serializeForClient } from "@/lib/serializeForClient";
 
-type NextPageProps = import('/home/user/studio/.next/types/app/cms/admin/moderators/[id]/edit/page').PageProps;
+type NextPageProps = { params: Promise<{ id: string }> };
 
 export default async function EditModeratorPage({ params }: NextPageProps) {
     const resolvedParams = await params;

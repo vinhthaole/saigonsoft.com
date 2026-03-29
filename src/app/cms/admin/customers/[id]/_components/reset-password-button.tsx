@@ -29,7 +29,7 @@ export function ResetPasswordButton({ uid, customerName }: ResetPasswordButtonPr
             });
 
             resetCustomerPassword(uid)
-                .then((res) => {
+                .then((res: any) => {
                     toast({
                         duration: 10000,
                         title: "Thành công",

@@ -7,7 +7,7 @@ import { DiscountForm } from "../../_components/discount-form";
 import { getDiscountById } from "../../actions";
 import { serializeForClient } from "@/lib/serializeForClient";
 
-type NextPageProps = import('/home/user/studio/.next/types/app/cms/admin/discounts/[id]/edit/page').PageProps;
+type NextPageProps = { params: Promise<{ id: string }> };
 
 export default async function EditDiscountPage({ params }: NextPageProps) {
     const resolvedParams = await params;

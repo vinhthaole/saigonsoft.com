@@ -265,7 +265,7 @@ export function RichTextEditor({ content, onChange }: RichTextEditorProps) {
     
      useEffect(() => {
         if (editor && content !== editor.getHTML()) {
-            editor.commands.setContent(content, false); 
+            editor.commands.setContent(content, { emitUpdate: false }); 
         }
     }, [content, editor]);
 
@@ -274,7 +274,7 @@ export function RichTextEditor({ content, onChange }: RichTextEditorProps) {
         setHtmlContent(newHtml);
         if (editor) {
              if (editor.getHTML() !== newHtml) {
-                 editor.commands.setContent(newHtml, false);
+                 editor.commands.setContent(newHtml, { emitUpdate: false });
             }
         }
     };

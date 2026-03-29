@@ -1,23 +1,14 @@
 
 'use server';
 
-import { ai, getModelByName } from '@/ai/genkit';
+import { getDynamicAi } from '@/ai/genkit';
 import { VariantGeneratorInputSchema, VariantGeneratorOutputSchema, type VariantGeneratorInput, type VariantGeneratorOutput } from '@/lib/schemas/product-variants';
 
 export async function generateVariants(input: VariantGeneratorInput): Promise<VariantGeneratorOutput> {
-  const variantGeneratorFlow = ai.defineFlow(
-    {
-      name: 'variantGeneratorFlow',
-      inputSchema: VariantGeneratorInputSchema,
-      outputSchema: VariantGeneratorOutputSchema,
-    },
-    async ({ productName, licenseType, brand }) => {
-      const prompt = ai.definePrompt({
-        name: 'variantGeneratorPrompt',
-        model: getModelByName(),
-        input: { schema: VariantGeneratorInputSchema },
-        output: { schema: VariantGeneratorOutputSchema },
-        prompt: `You are an assistant specializing in creating product variants for a software store in Vietnam.
+  const { ai, modelName } = await getDynamicAi();
+  const { productName, licenseType, brand } = input;
+
+  const promptText = `You are an assistant specializing in creating product variants for a software store in Vietnam.
 **Product Name:** "${productName}"
 **Brand:** "${brand}"
 **License Type:** "${licenseType}"
@@ -32,16 +23,16 @@ For each variant, create:
 2.  **name**: A clear descriptive name in Vietnamese (e.g., "1 năm / 1 PC").
 3.  **price**: A reasonable price in Vietnamese Dong (VND). The price should reflect the value of the variant (e.g., a longer license or more devices should be more expensive).
 4.  **salePrice**: An optional promotional sale price, lower than the original price.
-5.  **sku**: A unique Stock Keeping Unit for the store in the format "SGS-[BRAND]-[PRODUCTNAME]-[VARIANTDETAILS]". Example: SGS-KASP-IS-1Y1PC.`,
-      });
+5.  **sku**: A unique Stock Keeping Unit for the store in the format "SGS-[BRAND]-[PRODUCTNAME]-[VARIANTDETAILS]". Example: SGS-KASP-IS-1Y1PC.`;
 
-      const { output } = await prompt({ productName, licenseType, brand });
-      if (!output) {
-        throw new Error("AI failed to generate variants.");
-      }
-      return output;
-    }
-  );
+  const { output } = await ai.generate({
+      model: modelName,
+      prompt: promptText,
+      output: { schema: VariantGeneratorOutputSchema }
+  });
 
-  return variantGeneratorFlow(input);
+  if (!output) {
+      throw new Error("AI failed to generate variants.");
+  }
+  return output as VariantGeneratorOutput;
 }
