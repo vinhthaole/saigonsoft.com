@@ -20,5 +20,5 @@ export const ai = genkit({
 // Helper function to get the configured AI model name as a string.
 // The `ai` object will resolve this string to the correct, authenticated model instance.
 export function getModelByName() {
-    return process.env.GEMINI_MODEL ? `googleai/${process.env.GEMINI_MODEL}` : 'googleai/gemini-1.5-flash';
+    return process.env.GEMINI_MODEL ? `googleai/${process.env.GEMINI_MODEL}` : 'googleai/gemini-2.5-flash';
 }
