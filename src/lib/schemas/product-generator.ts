@@ -34,6 +34,11 @@ export const ProductDetailsOutputSchema = z.object({
   imageHint: z
     .string()
     .describe('Two or three keywords in English that can be used to find a relevant stock photo for this product. e.g., "photo editing software"'),
+  reviews: z.array(z.object({
+      rating: z.number().min(3).max(5).describe('A realistic product rating out of 5, preferably 4 or 5.'),
+      pros: z.array(z.string()).describe('List of 2-4 pros (ưu điểm) written in Vietnamese.'),
+      cons: z.array(z.string()).describe('List of 1-3 cons (nhược điểm) written in Vietnamese.'),
+  })).describe('Generate 2 to 3 dummy editorial-style reviews to make the product look attractive. Content must be Vietnamese.'),
 });
 export type ProductDetailsOutput = z.infer<typeof ProductDetailsOutputSchema>;
 

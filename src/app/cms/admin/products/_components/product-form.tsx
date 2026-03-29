@@ -81,6 +81,11 @@ const formSchema = z.object({
   variants: z.array(variantSchema).min(1, "Sản phẩm phải có ít nhất một biến thể."),
   seoTitle: z.string().optional(),
   seoDescription: z.string().optional(),
+  reviews: z.array(z.object({
+      rating: z.number().min(1).max(5),
+      pros: z.array(z.string()),
+      cons: z.array(z.string()),
+  })).optional(),
 });
 
 type ProductFormValues = z.infer<typeof formSchema>;
@@ -160,6 +165,7 @@ export function ProductForm({ initialData, categories, brands }: ProductFormProp
           variants: [{ id: nanoid(8), name: 'Mặc định', price: 0, resellerPrice: '', salePrice: '', sku: '', attributes: [] }],
           seoTitle: '',
           seoDescription: '',
+          reviews: [],
         },
   });
 
@@ -289,6 +295,7 @@ export function ProductForm({ initialData, categories, brands }: ProductFormProp
             imageHint: details.imageHint,
             imageUrl: imageUrl,
             variants: currentVariants, // Keep the existing variants
+            reviews: details.reviews || [], // Apply AI reviews
         });
 
         toast({
@@ -407,7 +414,7 @@ export function ProductForm({ initialData, categories, brands }: ProductFormProp
 
   const onSubmit = async (data: ProductFormValues) => {
     setIsLoading(true);
-    const submissionData = {...data, screenshots: data.screenshots?.filter(url => url && url.trim() !== '')};
+    const submissionData = {...data, screenshots: data.screenshots?.filter(url => url && url.trim() !== ''), reviews: data.reviews || []};
     
     try {
         if (initialData) {
