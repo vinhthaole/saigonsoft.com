@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, UserX, Gem, Trophy, Star, Diamond, Key } from "lucide-react";
+import { MoreHorizontal, UserX, Gem, Trophy, Star, Diamond } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,14 +20,11 @@ import {
   DropdownMenuLabel,
 } from '@/components/ui/dropdown-menu';
 import type { Customer, LoyaltyTier } from "@/lib/types";
+import React from 'react';
+import { Checkbox } from '@/components/ui/checkbox';
 import Link from "next/link";
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
-import React, { useState } from 'react';
-import { Checkbox } from '@/components/ui/checkbox';
-import { resetCustomerPassword } from '@/lib/admin-actions';
-import { useToast } from '@/hooks/use-toast';
-import { LoaderCircle } from 'lucide-react';
 
 interface CustomersTableProps {
     customers: Customer[];
@@ -70,47 +67,6 @@ function LoyaltyBadge({ tier }: { tier: LoyaltyTier }) {
             <Icon className="h-3.5 w-3.5" />
             <span>{tier}</span>
         </Badge>
-    );
-}
-
-function ResetPasswordMenuItem({ uid, customerName }: { uid: string, customerName: string }) {
-    const { toast } = useToast();
-
-    const handleSelect = (e: Event) => {
-        // Allow the dropdown to gracefully close before popping up a native confirm dialog
-        // This prevents the dreaded Radix UI focus-trap deadlock "bị đơ"
-        setTimeout(async () => {
-            if (!confirm(`Bạn có chắc chắn muốn cấp lại mật khẩu mới tự động cho ${customerName} và gửi qua email không?`)) {
-                return;
-            }
-            
-            toast({
-                title: "Đang xử lý...",
-                description: `Hệ thống đang khởi tạo mật khẩu và gửi email. Vui lòng đợi.`,
-            });
-            
-            try {
-                const res = await resetCustomerPassword(uid);
-                toast({
-                    duration: 10000,
-                    title: "Thành công",
-                    description: `Mật khẩu tạm đã được gửi. (Mật khẩu: ${res.temporaryPassword})`,
-                });
-            } catch (error: any) {
-                toast({
-                    variant: 'destructive',
-                    title: 'Lỗi',
-                    description: error.message || 'Không thể cấp lại mật khẩu.',
-                });
-            }
-        }, 150);
-    };
-
-    return (
-        <DropdownMenuItem onSelect={handleSelect} className="text-amber-600 focus:text-amber-600 cursor-pointer">
-            <Key className="mr-2 h-4 w-4" />
-            Cấp lại mật khẩu tạm
-        </DropdownMenuItem>
     );
 }
 
@@ -198,7 +154,6 @@ export function CustomersTable({ customers, isLoading, selectedCustomerIds, setS
                                             <DropdownMenuItem asChild>
                                                 <Link href={`/cms/admin/customers/${customerId}`}>Xem chi tiết</Link>
                                             </DropdownMenuItem>
-                                            <ResetPasswordMenuItem uid={customer.uid} customerName={customer.name} />
                                         </DropdownMenuContent>
                                     </DropdownMenu>
                                 </TableCell>

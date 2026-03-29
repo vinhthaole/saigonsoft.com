@@ -7,10 +7,6 @@ import { collection, getDocs, query, where, doc, updateDoc, orderBy, QueryConstr
 import { revalidatePath } from 'next/cache';
 import { getOrders } from './data';
 import { serializeForClient } from './serializeForClient';
-import { getAuth } from 'firebase-admin/auth';
-import { getFirebaseAdminApp } from '@/lib/firebase-admin';
-import { sendTemporaryPasswordEmail } from '@/lib/email';
-import { randomBytes } from 'crypto';
 
 
 export async function getCustomers(
@@ -158,37 +154,4 @@ export async function emptyCustomerTrash() {
 
 export async function syncUsersFromAuth() {
     throw new Error('This function is deprecated and should not be used. Customer data is now derived from orders and the users collection.');
-}
-
-export async function resetCustomerPassword(uid: string) {
-    if (!uid) throw new Error("User ID is required.");
-    
-    try {
-        const adminAuth = getAuth(getFirebaseAdminApp());
-        const userRecord = await adminAuth.getUser(uid);
-        
-        if (!userRecord.email) {
-            throw new Error("Người dùng này không có địa chỉ email.");
-        }
-        
-        // Generate a random temporary password (12 chars hex)
-        const temporaryPassword = randomBytes(6).toString('hex');
-        
-        // Update password in Firebase Auth
-        await adminAuth.updateUser(uid, {
-            password: temporaryPassword,
-        });
-        
-        // Send email with the temporary password asynchronously (we fire and forget)
-        // so that if SMTP gets stuck or times out, the UI doesn't hang.
-        sendTemporaryPasswordEmail({
-            name: userRecord.displayName || 'Khách hàng',
-            email: userRecord.email
-        }, temporaryPassword).catch((e: any) => console.error("Background email failed:", e));
-        
-        return { success: true, temporaryPassword };
-    } catch (error: any) {
-        console.error("Error resetting customer password:", error);
-        throw new Error(error.message || "Failed to reset password.");
-    }
 }

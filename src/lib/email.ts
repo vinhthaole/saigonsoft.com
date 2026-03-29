@@ -217,24 +217,3 @@ export async function sendForgotPasswordEmail(email: string) {
     const fullHtml = getBaseTemplate(config, body);
     await sendEmail(email, subject, fullHtml);
 }
-
-export async function sendTemporaryPasswordEmail(customer: { name: string, email: string }, temporaryPassword: string) {
-    const config = await getSiteConfig();
-    const siteUrl = config.companyInfo.websiteUrl || 'https://saigonsoft.com';
-    
-    // We construct a specific template for temporary passwords since it's not exposed in general SiteConfig
-    const companyName = config.companyInfo.name || 'Saigonsoft.com';
-    const subject = `[${companyName}] Mật khẩu tạm thời cho tài khoản của bạn`;
-    const body = `
-        <h1>Mật khẩu tạm thời</h1>
-        <p>Chào ${customer.name},</p>
-        <p>Quản trị viên vừa cấp lại mật khẩu tạm thời cho tài khoản của bạn tại <strong>${companyName}</strong> để hỗ trợ đăng nhập.</p>
-        <p>Mật khẩu tạm thời của bạn là: <strong style="font-size: 1.2em; padding: 5px 10px; background: #f0f0f0; border: 1px solid #ccc;">${temporaryPassword}</strong></p>
-        <p>Vui lòng đăng nhập bằng địa chỉ email và mật khẩu được cung cấp bên trên, sau đó <strong>đổi lại mật khẩu mới ngay lập tức</strong> trong phần Hồ sơ để bảo vệ tài khoản.</p>
-        <p><a href="${siteUrl}/login" style="background-color: #0056b3; color: #fff; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block; margin-top: 10px;">Đăng nhập ngay</a></p>
-        <p>Trân trọng,<br>Đội ngũ ${companyName}</p>
-    `;
-
-    const fullHtml = getBaseTemplate(config, body);
-    await sendEmail(customer.email, subject, fullHtml);
-}
