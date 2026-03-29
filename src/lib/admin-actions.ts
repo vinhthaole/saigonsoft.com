@@ -92,7 +92,7 @@ export async function updateUserStatus(userIds: string[], status: 'active' | 'tr
     const batch = writeBatch(db);
     userIds.forEach(uid => {
         const userRef = doc(db, 'users', uid);
-        batch.update(userRef, { status });
+        batch.set(userRef, { status }, { merge: true });
     });
 
     try {
