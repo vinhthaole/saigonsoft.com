@@ -214,6 +214,7 @@ export function RichTextEditor({ content, onChange }: RichTextEditorProps) {
     const [htmlContent, setHtmlContent] = useState(content);
 
     const editor = useEditor({
+        immediatelyRender: false,
         extensions: [
             StarterKit.configure({
                  heading: {
