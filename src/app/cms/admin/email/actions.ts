@@ -39,7 +39,7 @@ const emailCampaignSchema = z.object({
 });
 
 
-export async function sendCampaignEmail(data: z.infer<typeof emailCampaignSchema>) {
+export async function sendEmailCampaign(data: z.infer<typeof emailCampaignSchema>) {
     const validatedData = emailCampaignSchema.parse(data);
     
     // 1. Validate discount code if provided

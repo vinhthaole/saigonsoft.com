@@ -1,0 +1,53 @@
+﻿
+> nextn@0.1.0 build
+> next build
+
+   Γû▓ Next.js 15.5.12
+   - Environments: .env.local, .env
+   - Experiments (use with caution):
+     ┬╖ serverActions
+
+   Creating an optimized production build ...
+node.exe : Failed to 
+compile.
+At line:1 char:1
++ & "C:\Program 
+Files\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
+    + CategoryInfo         
+     : NotSpecified: (Fai  
+  led to compile.:String   
+ ) [], RemoteException
+    + FullyQualifiedErrorI 
+   d : NativeCommandError
+ 
+
+./node_modules/@tiptap/exte
+nsion-horizontal-rule/dist/
+index.js
+Attempted import error: 
+'canInsertNode' is not 
+exported from 
+'@tiptap/core' (imported 
+as 'canInsertNode').
+
+Import trace for requested 
+module:
+./node_modules/@tiptap/exte
+nsion-horizontal-rule/dist/
+index.js
+./node_modules/@tiptap/star
+ter-kit/dist/index.js
+./src/components/ui/rich-te
+xt-editor.tsx
+./src/app/cms/admin/pages/_
+components/new-page-form.ts
+x
+
+
+> Build failed because of 
+webpack errors

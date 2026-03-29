@@ -1,0 +1,157 @@
+﻿
+> nextn@0.1.0 build
+> next build
+
+   Γû▓ Next.js 15.5.12
+   - Environments: .env.local, .env
+   - Experiments (use with caution):
+     ┬╖ serverActions
+
+   Creating an optimized production build ...
+node.exe :  ΓÜá Compiled 
+with warnings in 12.6s
+At line:1 char:1
++ & "C:\Program 
+Files\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
+    + CategoryInfo         
+     : NotSpecified: ( ΓÜ  
+  á Compiled with warnin   
+ gs in 12.6s:String) []    
+, RemoteException
+    + FullyQualifiedErrorI 
+   d : NativeCommandError
+ 
+
+./src/app/cms/admin/email/_
+components/email-campaign-f
+orm.tsx
+Attempted import error: 
+'sendEmailCampaign' is not 
+exported from '../actions' 
+(imported as 
+'sendEmailCampaign').
+
+Import trace for requested 
+module:
+./src/app/cms/admin/email/_
+components/email-campaign-f
+orm.tsx
+./src/app/cms/admin/email/p
+age.tsx
+
+./node_modules/@opentelemet
+ry/instrumentation-winston/
+build/src/instrumentation.j
+s
+Module not found: Can't 
+resolve '@opentelemetry/win
+ston-transport' in 'C:\User
+s\futur\Downloads\saigonsof
+t\node_modules\@opentelemet
+ry\instrumentation-winston\
+build\src'
+
+Import trace for requested 
+module:
+./node_modules/@opentelemet
+ry/instrumentation-winston/
+build/src/instrumentation.j
+s
+./node_modules/@opentelemet
+ry/instrumentation-winston/
+build/src/index.js
+./node_modules/@genkit-ai/g
+oogle-cloud/lib/gcpOpenTele
+metry.js
+./node_modules/@genkit-ai/g
+oogle-cloud/lib/index.js
+./node_modules/@genkit-ai/f
+irebase/lib/index.js
+./node_modules/@genkit-ai/c
+ore/lib/tracing.js
+./node_modules/@genkit-ai/c
+ore/lib/action.js
+./node_modules/@genkit-ai/c
+ore/lib/index.mjs
+./src/app/cms/admin/email/a
+ctions.ts
+
+./node_modules/@opentelemet
+ry/sdk-node/build/src/Trace
+rProviderWithEnvExporter.js
+Module not found: Can't 
+resolve '@opentelemetry/exp
+orter-jaeger' in 'C:\Users\
+futur\Downloads\saigonsoft\
+node_modules\@opentelemetry
+\sdk-node\build\src'
+
+Import trace for requested 
+module:
+./node_modules/@opentelemet
+ry/sdk-node/build/src/Trace
+rProviderWithEnvExporter.js
+./node_modules/@opentelemet
+ry/sdk-node/build/src/sdk.j
+s
+./node_modules/@opentelemet
+ry/sdk-node/build/src/index
+.js
+./node_modules/@genkit-ai/c
+ore/lib/tracing.js
+./node_modules/@genkit-ai/c
+ore/lib/action.js
+./node_modules/@genkit-ai/c
+ore/lib/index.mjs
+./src/app/cms/admin/email/a
+ctions.ts
+
+ ΓÜá Compiled with 
+warnings in 22.7s
+
+./src/app/cms/admin/email/_
+components/email-campaign-f
+orm.tsx
+Attempted import error: 
+'sendEmailCampaign' is not 
+exported from '../actions' 
+(imported as 
+'sendEmailCampaign').
+
+Import trace for requested 
+module:
+./src/app/cms/admin/email/_
+components/email-campaign-f
+orm.tsx
+./src/app/cms/admin/email/p
+age.tsx
+
+ Γ£ô Compiled successfully in 35.5s
+   Skipping validation of types
+   Skipping linting
+   Collecting page data ...
+[Error 
+[PageNotFoundError]: 
+Cannot find module for 
+page: /order/payment/[id]] 
+{
+  code: 'ENOENT'
+}
+[Error 
+[PageNotFoundError]: 
+Cannot find module for 
+page: /pages/developer] {
+  code: 'ENOENT'
+}
+
+> Build error occurred
+[Error: Failed to collect 
+page data for 
+/order/payment/[id]] {
+  type: 'Error'
+}

@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: "standalone",
+  serverExternalPackages: ['genkit', '@genkit-ai/core', '@genkit-ai/firebase', '@genkit-ai/google-cloud'],
   typescript: {
     ignoreBuildErrors: true,
   },
