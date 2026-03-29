@@ -77,7 +77,7 @@ function ResetPasswordMenuItem({ uid, customerName }: { uid: string, customerNam
     const { toast } = useToast();
     const [isPending, setIsPending] = useState(false);
 
-    const handleReset = async (e: React.MouseEvent) => {
+    const handleSelect = async (e: Event) => {
         e.preventDefault(); // Keep dropdown open while pending
         if (!confirm(`Bạn có chắc chắn muốn cấp lại mật khẩu mới tự động cho ${customerName} và gửi qua email không?`)) {
             return;
@@ -102,7 +102,7 @@ function ResetPasswordMenuItem({ uid, customerName }: { uid: string, customerNam
     };
 
     return (
-        <DropdownMenuItem onClick={handleReset} disabled={isPending} className="text-amber-600 focus:text-amber-600 cursor-pointer">
+        <DropdownMenuItem onSelect={handleSelect} disabled={isPending} className="text-amber-600 focus:text-amber-600 cursor-pointer">
             {isPending ? <LoaderCircle className="mr-2 h-4 w-4 animate-spin" /> : <Key className="mr-2 h-4 w-4" />}
             Cấp lại mật khẩu tạm
         </DropdownMenuItem>

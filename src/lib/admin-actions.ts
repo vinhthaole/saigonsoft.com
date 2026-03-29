@@ -7,6 +7,10 @@ import { collection, getDocs, query, where, doc, updateDoc, orderBy, QueryConstr
 import { revalidatePath } from 'next/cache';
 import { getOrders } from './data';
 import { serializeForClient } from './serializeForClient';
+import { getAuth } from 'firebase-admin/auth';
+import { getFirebaseAdminApp } from '@/lib/firebase-admin';
+import { sendTemporaryPasswordEmail } from '@/lib/email';
+import { randomBytes } from 'crypto';
 
 
 export async function getCustomers(
@@ -159,31 +163,31 @@ export async function syncUsersFromAuth() {
 export async function resetCustomerPassword(uid: string) {
     if (!uid) throw new Error("User ID is required.");
     
-    const { getAuth } = await import('firebase-admin/auth');
-    const { getFirebaseAdminApp } = await import('@/lib/firebase-admin');
-    const { sendTemporaryPasswordEmail } = await import('@/lib/email');
-    const { randomBytes } = await import('crypto');
-
-    const adminAuth = getAuth(getFirebaseAdminApp());
-    const userRecord = await adminAuth.getUser(uid);
-    
-    if (!userRecord.email) {
-        throw new Error("Người dùng này không có địa chỉ email.");
+    try {
+        const adminAuth = getAuth(getFirebaseAdminApp());
+        const userRecord = await adminAuth.getUser(uid);
+        
+        if (!userRecord.email) {
+            throw new Error("Người dùng này không có địa chỉ email.");
+        }
+        
+        // Generate a random temporary password (12 chars hex)
+        const temporaryPassword = randomBytes(6).toString('hex');
+        
+        // Update password in Firebase Auth
+        await adminAuth.updateUser(uid, {
+            password: temporaryPassword,
+        });
+        
+        // Send email with the temporary password
+        await sendTemporaryPasswordEmail({
+            name: userRecord.displayName || 'Khách hàng',
+            email: userRecord.email
+        }, temporaryPassword);
+        
+        return { success: true };
+    } catch (error: any) {
+        console.error("Error resetting customer password:", error);
+        throw new Error(error.message || "Failed to reset password.");
     }
-    
-    // Generate a random temporary password (12 chars hex)
-    const temporaryPassword = randomBytes(6).toString('hex');
-    
-    // Update password in Firebase Auth
-    await adminAuth.updateUser(uid, {
-        password: temporaryPassword,
-    });
-    
-    // Send email with the temporary password
-    await sendTemporaryPasswordEmail({
-        name: userRecord.displayName || 'Khách hàng',
-        email: userRecord.email
-    }, temporaryPassword);
-    
-    return true;
 }
