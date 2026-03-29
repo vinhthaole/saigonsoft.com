@@ -35,6 +35,7 @@ import {
 import type { UserProfile, LoyaltyTier, LoyaltySettings } from '@/lib/types';
 import { updateUserLoyalty } from '@/app/cms/admin/actions';
 import { Input } from '@/components/ui/input';
+import { getFriendlyErrorMessage } from '@/lib/utils';
 
 
 const formSchema = z.object({
@@ -81,7 +82,7 @@ export function CustomerLoyaltyForm({ profile, loyaltySettings }: CustomerLoyalt
         toast({
           variant: 'destructive',
           title: 'Lỗi!',
-          description: error.message || 'Không thể cập nhật.',
+          description: getFriendlyErrorMessage(error, 'Không thể cập nhật.'),
         });
       }
     });

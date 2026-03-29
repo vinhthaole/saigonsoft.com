@@ -21,6 +21,7 @@ import { useToast } from '@/hooks/use-toast';
 import { serializeForClient } from '@/lib/serializeForClient';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
+import { getFriendlyErrorMessage } from '@/lib/utils';
 
 interface CustomersClientPageProps {
   initialCustomers: UserProfile[];
@@ -152,7 +153,7 @@ export function CustomersClientPage({ initialCustomers }: CustomersClientPagePro
         toast({
           variant: 'destructive',
           title: 'Lỗi!',
-          description: error.message || 'Không thể thực hiện hành động.',
+          description: getFriendlyErrorMessage(error, 'Không thể thực hiện hành động.'),
         });
       }
     });

@@ -7,6 +7,7 @@ import { useTransition } from "react";
 import { updateOrderStatus } from "../actions";
 import { LoaderCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { getFriendlyErrorMessage } from '@/lib/utils';
 
 interface UpdateStatusButtonProps {
     orderId: string;
@@ -34,7 +35,7 @@ export function UpdateStatusButton({ orderId, currentStatus, targetStatus, label
                  toast({
                     variant: "destructive",
                     title: "Lỗi!",
-                    description: error.message || "Không thể cập nhật trạng thái đơn hàng."
+                    description: getFriendlyErrorMessage(error, "Không thể cập nhật trạng thái đơn hàng.")
                 });
             }
         });

@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useTransition } from "react";
 import { exportOrders } from "../actions";
 import { LoaderCircle, File } from "lucide-react";
+import { getFriendlyErrorMessage } from '@/lib/utils';
 
 interface ExportOrdersButtonProps {
     userId?: string; // Optional: to export orders for a specific user
@@ -54,7 +55,7 @@ export function ExportOrdersButton({ userId }: ExportOrdersButtonProps) {
                  toast({
                     variant: "destructive",
                     title: "Lỗi!",
-                    description: error.message || "Không thể xuất báo cáo."
+                    description: getFriendlyErrorMessage(error, "Không thể xuất báo cáo.")
                 });
             }
         });

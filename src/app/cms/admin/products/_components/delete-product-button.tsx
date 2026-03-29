@@ -17,6 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useTransition } from "react";
 import { deleteProduct } from "../actions";
 import { LoaderCircle } from "lucide-react";
+import { getFriendlyErrorMessage } from '@/lib/utils';
 
 
 export function DeleteProductButton({ productId, onSuccess }: { productId: string, onSuccess?: () => void }) {
@@ -36,7 +37,7 @@ export function DeleteProductButton({ productId, onSuccess }: { productId: strin
                  toast({
                     variant: "destructive",
                     title: "Lỗi!",
-                    description: error.message || "Không thể xóa sản phẩm. Vui lòng thử lại."
+                    description: getFriendlyErrorMessage(error, "Không thể xóa sản phẩm. Vui lòng thử lại.")
                 });
             }
         })

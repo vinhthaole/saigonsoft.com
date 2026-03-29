@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { resetCustomerPassword } from '@/lib/admin-actions';
 import { Key, LoaderCircle } from 'lucide-react';
+import { getFriendlyErrorMessage } from '@/lib/utils';
 
 interface ResetPasswordButtonProps {
     uid: string;
@@ -40,7 +41,7 @@ export function ResetPasswordButton({ uid, customerName }: ResetPasswordButtonPr
                     toast({
                         variant: 'destructive',
                         title: 'Lỗi',
-                        description: error.message || 'Không thể cấp lại mật khẩu.',
+                        description: getFriendlyErrorMessage(error, 'Không thể cấp lại mật khẩu.'),
                     });
                 })
                 .finally(() => {

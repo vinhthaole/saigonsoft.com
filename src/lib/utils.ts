@@ -23,3 +23,35 @@ export function deepMerge<T extends Record<string, any>>(target: T, source: Part
 
   return output as T;
 }
+
+export function getFriendlyErrorMessage(error: any, fallbackMessage: string = 'Đã có lỗi xảy ra. Vui lòng thử lại.'): string {
+  const originalMessage = error?.message || String(error);
+
+  // In development, show raw messages for easier debugging.
+  if (process.env.NODE_ENV === 'development') {
+    return originalMessage;
+  }
+
+  // Check known error codes
+  if (error?.code) {
+    switch (error.code) {
+      case 'auth/email-already-in-use': return 'Email này đã được sử dụng.';
+      case 'auth/invalid-credential':
+      case 'auth/wrong-password':
+      case 'auth/user-not-found': return 'Thông tin đăng nhập không chính xác.';
+      case 'auth/too-many-requests': return 'Thao tác quá thường xuyên. Vui lòng thử lại sau.';
+      case 'auth/weak-password': return 'Mật khẩu quá yếu.';
+      case 'permission-denied': return 'Bạn không có quyền thực hiện thao tác này.';
+    }
+  }
+
+  // Fallback masking logic for anything containing backend tech jargon
+  const lowercaseMsg = originalMessage.toLowerCase();
+  const jargonWords = ['firebase', 'firestore', 'auth/', 'internal', 'google api', 'generativelanguage'];
+  
+  if (jargonWords.some(jargon => lowercaseMsg.includes(jargon))) {
+     return fallbackMessage;
+  }
+
+  return originalMessage || fallbackMessage;
+}

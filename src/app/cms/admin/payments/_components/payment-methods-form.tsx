@@ -31,6 +31,7 @@ import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import { getFriendlyErrorMessage } from '@/lib/utils';
 
 const paymentMethodDetailsSchema = z.object({
     enabled: z.boolean(),
@@ -95,7 +96,7 @@ export function PaymentMethodsForm({ initialData }: PaymentMethodsFormProps) {
         toast({
           variant: 'destructive',
           title: 'Lỗi!',
-          description: error.message || 'Không thể cập nhật cài đặt.',
+          description: getFriendlyErrorMessage(error, 'Không thể cập nhật cài đặt.'),
         });
       }
     });

@@ -29,6 +29,7 @@ import { updateIntegrations } from '../../actions';
 import type { SiteConfig } from '@/lib/types';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { getFriendlyErrorMessage } from '@/lib/utils';
 
 
 const integrationsSchema = z.object({
@@ -92,7 +93,7 @@ export function IntegrationsForm({ initialData }: IntegrationsFormProps) {
         toast({
           variant: 'destructive',
           title: 'Lỗi!',
-          description: error.message || 'Không thể cập nhật cài đặt.',
+          description: getFriendlyErrorMessage(error, 'Không thể cập nhật cài đặt.'),
         });
       }
     });

@@ -44,24 +44,8 @@ export async function middleware(request: NextRequest) {
     });
 
     if (res.ok) {
-      const data = await res.json();
-      const websiteUrl = data.fields?.companyInfo?.mapValue?.fields?.websiteUrl?.stringValue;
-      
-      if (websiteUrl) {
-        const targetUrl = new URL(websiteUrl);
-        const targetHost = targetUrl.host;
-
-        // If the current host doesn't match the configured Website URL host, we redirect.
-        // E.g. saigonsoft.com -> www.saigonsoft.com
-        if (currentHost !== targetHost) {
-          const newUrl = new URL(url.href);
-          newUrl.protocol = targetUrl.protocol;
-          newUrl.hostname = targetUrl.hostname;
-          newUrl.port = targetUrl.port || ''; // Explicitly clear Cloud Run's internal 8080 port if target has no port
-          
-          return NextResponse.redirect(newUrl, { status: 308 }); // 308 Permanent Redirect for SEO
-        }
-      }
+      // Intentionally bypassed strictly enforcing Website URL redirect.
+      // E.g. redirecting saigonsoft.com -> www.saigonsoft.com is now handled by Cloudflare DNS settings.
     }
   } catch (error) {
     // Fail silently so the site doesn't crash if Firebase is unreachable

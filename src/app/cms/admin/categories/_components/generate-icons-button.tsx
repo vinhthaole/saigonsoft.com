@@ -7,6 +7,7 @@ import { Sparkles, LoaderCircle } from "lucide-react";
 import { useTransition } from "react";
 import { generateAndAssignIcons } from "../actions";
 import type { Category } from "@/lib/types";
+import { getFriendlyErrorMessage } from '@/lib/utils';
 
 interface GenerateIconsButtonProps {
     categories: Category[];
@@ -41,7 +42,7 @@ export function GenerateIconsButton({ categories }: GenerateIconsButtonProps) {
                 toast({
                     variant: 'destructive',
                     title: "Lỗi!",
-                    description: error.message || "Không thể tạo icon bằng AI."
+                    description: getFriendlyErrorMessage(error, "Không thể tạo icon bằng AI.")
                 });
             }
         });

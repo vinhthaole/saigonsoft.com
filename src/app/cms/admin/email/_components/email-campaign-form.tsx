@@ -44,6 +44,7 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { useDebounce } from 'use-debounce';
+import { getFriendlyErrorMessage } from '@/lib/utils';
 
 const campaignSchema = z.object({
   subject: z.string().min(1, 'Tiêu đề là bắt buộc.'),
@@ -154,7 +155,7 @@ export function EmailCampaignForm({ discounts, initialData }: EmailCampaignFormP
         toast({
           variant: 'destructive',
           title: 'Lỗi!',
-          description: error.message || 'Không thể gửi chiến dịch email.',
+          description: getFriendlyErrorMessage(error, 'Không thể gửi chiến dịch email.'),
         });
       }
     });
@@ -180,7 +181,7 @@ export function EmailCampaignForm({ discounts, initialData }: EmailCampaignFormP
         toast({
             variant: 'destructive',
             title: 'Lỗi!',
-            description: error.message || 'Không thể tạo nội dung bằng AI.'
+            description: getFriendlyErrorMessage(error, 'Không thể tạo nội dung bằng AI.')
         });
     } finally {
         setIsGenerating(false);

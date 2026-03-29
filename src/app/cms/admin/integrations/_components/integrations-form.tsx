@@ -28,6 +28,7 @@ import { LoaderCircle, Save } from 'lucide-react';
 import { updateIntegrations } from '../../actions';
 import type { SiteConfig } from '@/lib/types';
 import { Input } from '@/components/ui/input';
+import { getFriendlyErrorMessage } from '@/lib/utils';
 
 const integrationsSchema = z.object({
   email: z.object({
@@ -77,7 +78,7 @@ export function IntegrationsForm({ initialData }: IntegrationsFormProps) {
         toast({
           variant: 'destructive',
           title: 'Lỗi!',
-          description: error.message || 'Không thể cập nhật cài đặt.',
+          description: getFriendlyErrorMessage(error, 'Không thể cập nhật cài đặt.'),
         });
       }
     });

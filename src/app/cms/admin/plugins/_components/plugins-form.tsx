@@ -35,6 +35,7 @@ import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Checkbox } from '@/components/ui/checkbox';
 import Image from 'next/image';
+import { getFriendlyErrorMessage } from '@/lib/utils';
 
 
 const pluginSettingsSchema = z.object({
@@ -171,7 +172,7 @@ export function PluginsForm({ initialData, products, pages }: PluginsFormProps) 
         toast({
           variant: 'destructive',
           title: 'Lỗi!',
-          description: error.message || 'Không thể cập nhật cài đặt.',
+          description: getFriendlyErrorMessage(error, 'Không thể cập nhật cài đặt.'),
         });
       }
     });

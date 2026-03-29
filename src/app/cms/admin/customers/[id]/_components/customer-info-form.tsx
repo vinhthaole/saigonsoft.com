@@ -29,6 +29,7 @@ import type { UserProfile } from '@/lib/types';
 import { updateUserInfo } from '@/app/cms/admin/actions';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { getFriendlyErrorMessage } from '@/lib/utils';
 
 const formSchema = z.object({
   displayName: z.string().min(1, 'Họ và tên là bắt buộc.'),
@@ -72,7 +73,7 @@ export function CustomerInfoForm({ profile }: CustomerInfoFormProps) {
         toast({
           variant: 'destructive',
           title: 'Lỗi!',
-          description: error.message || 'Không thể cập nhật thông tin.',
+          description: getFriendlyErrorMessage(error, 'Không thể cập nhật thông tin.'),
         });
       }
     });

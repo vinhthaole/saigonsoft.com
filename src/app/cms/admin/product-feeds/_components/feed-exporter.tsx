@@ -16,6 +16,7 @@ import { useTransition } from 'react';
 import { LoaderCircle, Download, Database, FileText, FileCode2, FileSpreadsheet } from 'lucide-react';
 import { exportProducts } from '../actions';
 import type { ExportFormat } from '../actions';
+import { getFriendlyErrorMessage } from '@/lib/utils';
 
 
 export function FeedExporter() {
@@ -45,7 +46,7 @@ export function FeedExporter() {
         toast({
           variant: 'destructive',
           title: 'Lỗi!',
-          description: error.message || 'Không thể xuất dữ liệu sản phẩm.',
+          description: getFriendlyErrorMessage(error, 'Không thể xuất dữ liệu sản phẩm.'),
         });
       }
     });

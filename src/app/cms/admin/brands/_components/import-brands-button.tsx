@@ -19,6 +19,7 @@ import {
 import { getBrands } from '@/lib/data';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
+import { getFriendlyErrorMessage } from '@/lib/utils';
 
 interface PreviewState {
   newBrands: string[];
@@ -73,7 +74,7 @@ export function ImportBrandsButton() {
         toast({
           variant: 'destructive',
           title: 'Đã có lỗi xảy ra',
-          description: error.message || 'Không thể xử lý tệp.',
+          description: getFriendlyErrorMessage(error, 'Không thể xử lý tệp.'),
         });
       } finally {
         setIsLoading(false);
@@ -96,7 +97,7 @@ export function ImportBrandsButton() {
          toast({
           variant: 'destructive',
           title: 'Lỗi nhập liệu!',
-          description: error.message || 'Không thể thêm thương hiệu từ tệp.',
+          description: getFriendlyErrorMessage(error, 'Không thể thêm thương hiệu từ tệp.'),
         });
     } finally {
         setIsLoading(false);

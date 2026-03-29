@@ -39,6 +39,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import type { AdminUser, Permission } from '@/lib/types';
 import { addModerator, updateModerator } from '@/app/cms/admin/actions';
 import { Separator } from '@/components/ui/separator';
+import { getFriendlyErrorMessage } from '@/lib/utils';
 
 const permissionOptions = [
     { id: 'manage_products', label: 'Sản phẩm', description: 'Thêm, sửa, xóa sản phẩm.' },
@@ -108,7 +109,7 @@ export function ModeratorForm({ initialData }: ModeratorFormProps) {
       toast({
         variant: 'destructive',
         title: 'Đã có lỗi xảy ra',
-        description: error.message || `Không thể ${initialData ? 'cập nhật' : 'tạo'} quản trị viên.`,
+        description: getFriendlyErrorMessage(error, `Không thể ${initialData ? 'cập nhật' : 'tạo'} quản trị viên.`),
       });
     } finally {
         setIsLoading(false);

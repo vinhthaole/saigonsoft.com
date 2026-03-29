@@ -28,6 +28,7 @@ import { LoaderCircle, Save, Phone } from 'lucide-react';
 import { updateAuthSettings } from '@/app/cms/admin/actions';
 import type { SiteConfig } from '@/lib/types';
 import { Switch } from '@/components/ui/switch';
+import { getFriendlyErrorMessage } from '@/lib/utils';
 
 
 const authSettingsSchema = z.object({
@@ -97,7 +98,7 @@ export function AuthSettingsForm({ initialData }: AuthSettingsFormProps) {
         toast({
           variant: 'destructive',
           title: 'Lỗi!',
-          description: error.message || 'Không thể cập nhật cài đặt.',
+          description: getFriendlyErrorMessage(error, 'Không thể cập nhật cài đặt.'),
         });
       }
     });

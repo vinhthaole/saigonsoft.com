@@ -9,6 +9,7 @@ import { useState, useTransition } from "react";
 import { applyDiscountCode } from "@/app/cms/admin/discounts/actions";
 import { useToast } from "@/hooks/use-toast";
 import { LoaderCircle, Ticket, Trash2 } from "lucide-react";
+import { getFriendlyErrorMessage } from '@/lib/utils';
 import {
   Card,
   CardContent,
@@ -38,7 +39,7 @@ export function DiscountCodeForm() {
                  toast({
                     variant: "destructive",
                     title: "Lỗi",
-                    description: error.message || "Mã giảm giá không hợp lệ hoặc đã hết hạn."
+                    description: getFriendlyErrorMessage(error, "Mã giảm giá không hợp lệ hoặc đã hết hạn.")
                 });
             }
         });

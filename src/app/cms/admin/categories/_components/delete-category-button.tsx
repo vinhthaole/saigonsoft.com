@@ -17,6 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useTransition } from "react";
 import { deleteCategory } from "../actions";
 import { LoaderCircle } from "lucide-react";
+import { getFriendlyErrorMessage } from '@/lib/utils';
 
 
 export function DeleteCategoryButton({ categorySlug }: { categorySlug: string }) {
@@ -35,7 +36,7 @@ export function DeleteCategoryButton({ categorySlug }: { categorySlug: string })
                  toast({
                     variant: "destructive",
                     title: "Lỗi!",
-                    description: error.message || "Không thể xóa danh mục. Vui lòng thử lại."
+                    description: getFriendlyErrorMessage(error, "Không thể xóa danh mục. Vui lòng thử lại.")
                 });
             }
         })

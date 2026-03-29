@@ -51,6 +51,7 @@ import { Calendar as CalendarIcon } from 'lucide-react';
 import { vi } from 'date-fns/locale';
 import { FileUploader } from '../../appearance/_components/file-uploader';
 import { useDebounce } from 'use-debounce';
+import { getFriendlyErrorMessage } from '@/lib/utils';
 
 
 const variantSchema = z.object({
@@ -384,7 +385,7 @@ export function ProductForm({ initialData, categories, brands }: ProductFormProp
       toast({
         variant: 'destructive',
         title: 'Lỗi tạo biến thể',
-        description: error.message || 'Không thể tạo biến thể bằng AI. Vui lòng thử lại.',
+        description: getFriendlyErrorMessage(error, 'Không thể tạo biến thể bằng AI. Vui lòng thử lại.'),
       });
     } finally {
       setIsGeneratingVariants(false);
@@ -405,7 +406,7 @@ export function ProductForm({ initialData, categories, brands }: ProductFormProp
         form.setValue('seoDescription', result.seoDescription, { shouldDirty: true });
         toast({ title: 'Đã tạo nội dung SEO!', description: 'AI đã tạo và điền vào các trường SEO.' });
     } catch(error: any) {
-        toast({ variant: 'destructive', title: 'Lỗi', description: error.message || 'Không thể tạo nội dung SEO.' });
+        toast({ variant: 'destructive', title: 'Lỗi', description: getFriendlyErrorMessage(error, 'Không thể tạo nội dung SEO.') });
     } finally {
         setIsGeneratingSeo(false);
     }

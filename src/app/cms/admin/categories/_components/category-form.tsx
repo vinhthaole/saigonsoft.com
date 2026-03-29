@@ -23,6 +23,7 @@ import { LoaderCircle } from 'lucide-react';
 import { addCategory, updateCategory } from '../actions';
 import type { Category } from '@/lib/types';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { getFriendlyErrorMessage } from '@/lib/utils';
 
 const formSchema = z.object({
   name: z.string().min(2, 'Tên danh mục phải có ít nhất 2 ký tự.'),
@@ -104,7 +105,7 @@ export function CategoryForm({ initialData }: CategoryFormProps) {
       toast({
         variant: 'destructive',
         title: 'Đã có lỗi xảy ra',
-        description: error.message || `Không thể ${initialData ? 'cập nhật' : 'tạo'} danh mục. Vui lòng thử lại.`,
+        description: getFriendlyErrorMessage(error, `Không thể ${initialData ? 'cập nhật' : 'tạo'} danh mục. Vui lòng thử lại.`),
       });
     } finally {
         setIsLoading(false);

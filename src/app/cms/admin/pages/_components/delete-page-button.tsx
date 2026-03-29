@@ -17,6 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useTransition } from "react";
 import { LoaderCircle } from "lucide-react";
 import { deletePage } from "../actions";
+import { getFriendlyErrorMessage } from '@/lib/utils';
 
 export function DeletePageButton({ slug }: { slug: string }) {
     const [isPending, startTransition] = useTransition();
@@ -34,7 +35,7 @@ export function DeletePageButton({ slug }: { slug: string }) {
                  toast({
                     variant: "destructive",
                     title: "Lỗi!",
-                    description: error.message || "Không thể xóa trang. Vui lòng thử lại."
+                    description: getFriendlyErrorMessage(error, "Không thể xóa trang. Vui lòng thử lại.")
                 });
             }
         })

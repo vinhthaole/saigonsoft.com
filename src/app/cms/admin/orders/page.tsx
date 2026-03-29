@@ -42,6 +42,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { OrderTableToolbar } from "./_components/order-table-toolbar";
 import { updateBulkOrderStatus, deleteBulkOrders } from "./actions";
 import { useToast } from "@/hooks/use-toast";
+import { getFriendlyErrorMessage } from '@/lib/utils';
 
 
 const formatCurrency = (amount: number) => new Intl.NumberFormat('vi-VN', {
@@ -313,7 +314,7 @@ function OrdersPageContent() {
                 toast({ title: "Thành công!", description: message });
                 fetchOrders(); // Refetch data
             } catch (error: any) {
-                toast({ variant: 'destructive', title: 'Lỗi!', description: error.message || "Không thể thực hiện hành động hàng loạt." });
+                toast({ variant: 'destructive', title: 'Lỗi!', description: getFriendlyErrorMessage(error, "Không thể thực hiện hành động hàng loạt.") });
             }
         });
     }

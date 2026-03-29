@@ -31,6 +31,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ProductsTableToolbar } from './_components/products-table-toolbar';
 import { updateProductStatus, deleteProducts } from './actions';
 import { useToast } from '@/hooks/use-toast';
+import { getFriendlyErrorMessage } from '@/lib/utils';
 
 function ProductsTableSkeleton() {
     return (
@@ -150,7 +151,7 @@ function ProductsPageContent({ brands }: { brands: Brand[] }) {
                 toast({ title: 'Thành công!', description: message });
                 fetchData(activeTab);
             } catch (error: any) {
-                toast({ variant: 'destructive', title: 'Lỗi!', description: error.message || "Không thể thực hiện hành động hàng loạt." });
+                toast({ variant: 'destructive', title: 'Lỗi!', description: getFriendlyErrorMessage(error, "Không thể thực hiện hành động hàng loạt.") });
             }
         });
     }

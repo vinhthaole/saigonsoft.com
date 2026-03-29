@@ -31,6 +31,7 @@ import { RichTextEditor } from '@/components/ui/rich-text-editor';
 import { useRouter } from 'next/navigation';
 import { Separator } from '@/components/ui/separator';
 import { Label } from '@/components/ui/label';
+import { getFriendlyErrorMessage } from '@/lib/utils';
 
 
 const newPageSchema = z.object({
@@ -98,7 +99,7 @@ export function NewPageForm() {
         toast({
           variant: 'destructive',
           title: 'Lỗi!',
-          description: error.message || 'Không thể tạo trang mới.',
+          description: getFriendlyErrorMessage(error, 'Không thể tạo trang mới.'),
         });
       }
     });
@@ -122,7 +123,7 @@ export function NewPageForm() {
         toast({
             variant: 'destructive',
             title: 'Lỗi!',
-            description: error.message || 'Không thể tạo nội dung bằng AI.'
+            description: getFriendlyErrorMessage(error, 'Không thể tạo nội dung bằng AI.')
         });
     } finally {
         setIsGenerating(false);

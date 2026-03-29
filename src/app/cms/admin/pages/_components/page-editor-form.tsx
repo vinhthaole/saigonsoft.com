@@ -41,6 +41,7 @@ import {
 } from '@/components/ui/dialog';
 import { useRouter } from 'next/navigation';
 import { Textarea } from '@/components/ui/textarea';
+import { getFriendlyErrorMessage } from '@/lib/utils';
 
 const slugify = (str: string) => {
     str = str.replace(/^\s+|\s+$/g, ''); // trim
@@ -120,7 +121,7 @@ export function PageEditorForm({ page }: PageEditorFormProps) {
         toast({
           variant: 'destructive',
           title: 'Lỗi!',
-          description: error.message || 'Không thể cập nhật trang.',
+          description: getFriendlyErrorMessage(error, 'Không thể cập nhật trang.'),
         });
       }
     });
@@ -144,7 +145,7 @@ export function PageEditorForm({ page }: PageEditorFormProps) {
         toast({
             variant: 'destructive',
             title: 'Lỗi!',
-            description: error.message || 'Không thể tạo nội dung bằng AI.'
+            description: getFriendlyErrorMessage(error, 'Không thể tạo nội dung bằng AI.')
         });
     } finally {
         setIsGenerating(false);
@@ -176,7 +177,7 @@ export function PageEditorForm({ page }: PageEditorFormProps) {
         toast({
             variant: 'destructive',
             title: 'Lỗi!',
-            description: error.message || 'Không thể chỉnh sửa nội dung bằng AI.'
+            description: getFriendlyErrorMessage(error, 'Không thể chỉnh sửa nội dung bằng AI.')
         });
     } finally {
         setIsEditing(false);
@@ -197,7 +198,7 @@ export function PageEditorForm({ page }: PageEditorFormProps) {
         form.setValue('seoDescription', result.seoDescription, { shouldDirty: true });
         toast({ title: 'Đã tạo nội dung SEO!', description: 'AI đã tạo và điền vào các trường SEO.' });
     } catch(error: any) {
-        toast({ variant: 'destructive', title: 'Lỗi', description: error.message || 'Không thể tạo nội dung SEO.' });
+        toast({ variant: 'destructive', title: 'Lỗi', description: getFriendlyErrorMessage(error, 'Không thể tạo nội dung SEO.') });
     } finally {
         setIsGeneratingSeo(false);
     }

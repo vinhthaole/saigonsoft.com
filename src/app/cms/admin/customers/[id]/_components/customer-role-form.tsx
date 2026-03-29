@@ -33,6 +33,7 @@ import {
 } from '@/components/ui/select';
 import type { UserProfile } from '@/lib/types';
 import { updateUserRole } from '@/app/cms/admin/actions';
+import { getFriendlyErrorMessage } from '@/lib/utils';
 
 const formSchema = z.object({
   role: z.enum(['customer', 'reseller']),
@@ -68,7 +69,7 @@ export function CustomerRoleForm({ profile }: CustomerRoleFormProps) {
         toast({
           variant: 'destructive',
           title: 'Lỗi!',
-          description: error.message || 'Không thể cập nhật vai trò.',
+          description: getFriendlyErrorMessage(error, 'Không thể cập nhật vai trò.'),
         });
       }
     });

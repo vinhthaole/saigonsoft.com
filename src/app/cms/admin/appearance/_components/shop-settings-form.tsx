@@ -25,6 +25,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import type { SiteConfig } from '@/lib/types';
+import { getFriendlyErrorMessage } from '@/lib/utils';
 
 
 const shopFilterSchema = z.object({
@@ -89,7 +90,7 @@ export function ShopSettingsForm({ initialData }: ShopSettingsFormProps) {
             toast({
                 variant: 'destructive',
                 title: 'Lỗi!',
-                description: error.message || 'Không thể cập nhật cài đặt.',
+                description: getFriendlyErrorMessage(error, 'Không thể cập nhật cài đặt.'),
             });
         }
     });

@@ -35,6 +35,7 @@ import { useToast } from '@/hooks/use-toast';
 import { LoaderCircle, Save, Sparkles, AlertTriangle } from 'lucide-react';
 import { updateApiKeysConfig, testGeminiApiKey } from '../../actions';
 import type { SiteConfig } from '@/lib/types';
+import { getFriendlyErrorMessage } from '@/lib/utils';
 
 const apiKeysFormSchema = z.object({
   enabled: z.boolean(),
@@ -76,7 +77,7 @@ export function ApiKeysForm({ initialData }: ApiKeysFormProps) {
         toast({
           variant: 'destructive',
           title: 'Lỗi!',
-          description: error.message || 'Không thể cập nhật cấu hình.',
+          description: getFriendlyErrorMessage(error, 'Không thể cập nhật cấu hình.'),
         });
       }
     });
@@ -111,7 +112,7 @@ export function ApiKeysForm({ initialData }: ApiKeysFormProps) {
         toast({
             variant: 'destructive',
             title: 'Test thất bại',
-            description: error.message,
+            description: getFriendlyErrorMessage(error),
         });
         form.setValue('model', ''); // Reset model invalid
     } finally {

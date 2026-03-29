@@ -29,6 +29,7 @@ import { LoaderCircle } from 'lucide-react';
 import { updateAppearance } from '../actions';
 import type { SiteConfig } from '@/lib/types';
 import { FileUploader } from './file-uploader';
+import { getFriendlyErrorMessage } from '@/lib/utils';
 
 const siteSettingsSchema = z.object({
   theme: z.object({
@@ -105,7 +106,7 @@ export function SiteSettingsForm({ initialData }: SiteSettingsFormProps) {
         toast({
           variant: 'destructive',
           title: 'Lỗi!',
-          description: error.message || 'Đã có lỗi xảy ra khi cập nhật cài đặt.',
+          description: getFriendlyErrorMessage(error, 'Đã có lỗi xảy ra khi cập nhật cài đặt.'),
         });
       }
     });

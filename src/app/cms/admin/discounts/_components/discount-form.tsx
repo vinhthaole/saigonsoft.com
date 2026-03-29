@@ -42,6 +42,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
+import { getFriendlyErrorMessage } from '@/lib/utils';
 
 const formSchema = z.object({
   code: z.string().min(3, "Mã code phải có ít nhất 3 ký tự.").toUpperCase(),
@@ -100,7 +101,7 @@ export function DiscountForm({ initialData }: DiscountFormProps) {
       toast({
         variant: 'destructive',
         title: 'Đã có lỗi xảy ra',
-        description: error.message || `Không thể ${initialData ? 'cập nhật' : 'tạo'} mã giảm giá.`,
+        description: getFriendlyErrorMessage(error, `Không thể ${initialData ? 'cập nhật' : 'tạo'} mã giảm giá.`),
       });
     } finally {
         setIsLoading(false);

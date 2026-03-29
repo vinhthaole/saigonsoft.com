@@ -29,6 +29,7 @@ import { useState } from 'react';
 import { LoaderCircle } from 'lucide-react';
 import { addBrand, updateBrand } from '../actions';
 import type { Brand } from '@/lib/types';
+import { getFriendlyErrorMessage } from '@/lib/utils';
 
 
 const formSchema = z.object({
@@ -82,7 +83,7 @@ export function BrandForm({ initialData }: BrandFormProps) {
       toast({
         variant: 'destructive',
         title: 'Đã có lỗi xảy ra',
-        description: error.message || `Không thể ${initialData ? 'cập nhật' : 'tạo'} thương hiệu. Vui lòng thử lại.`,
+        description: getFriendlyErrorMessage(error, `Không thể ${initialData ? 'cập nhật' : 'tạo'} thương hiệu. Vui lòng thử lại.`),
       });
     } finally {
         setIsLoading(false);

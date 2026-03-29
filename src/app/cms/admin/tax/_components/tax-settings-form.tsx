@@ -38,6 +38,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { countries } from '../countries';
+import { getFriendlyErrorMessage } from '@/lib/utils';
 
 const taxRateSchema = z.object({
   countryCode: z.string().min(2),
@@ -98,7 +99,7 @@ export function TaxSettingsForm({ initialTaxRates, initialDefaultCountry }: TaxS
         toast({
           variant: 'destructive',
           title: 'Lỗi!',
-          description: error.message || 'Đã có lỗi xảy ra khi cập nhật.',
+          description: getFriendlyErrorMessage(error, 'Đã có lỗi xảy ra khi cập nhật.'),
         });
       }
     });
@@ -117,7 +118,7 @@ export function TaxSettingsForm({ initialTaxRates, initialDefaultCountry }: TaxS
                 remove(index);
                 toast({ title: 'Đã xóa quy tắc thuế.' });
             } catch (error: any) {
-                toast({ variant: 'destructive', title: 'Lỗi!', description: error.message });
+                toast({ variant: 'destructive', title: 'Lỗi!', description: getFriendlyErrorMessage(error) });
             }
         });
     } else {
