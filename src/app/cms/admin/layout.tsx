@@ -107,7 +107,7 @@ export default function AdminLayout({
         if (!loading) {
             if (!user) {
                 router.push('/login');
-            } else if (user.email !== 'admin@example.com') {
+            } else if (user.email !== 'admin@bestantivirus.us') {
                 router.push('/');
             }
         }
@@ -128,7 +128,7 @@ export default function AdminLayout({
         fetchConfig();
     }, []);
 
-    if (loading || !user || user.email !== 'admin@example.com') {
+    if (loading || !user || user.email !== 'admin@bestantivirus.us') {
         return null; // or a loading spinner
     }
 

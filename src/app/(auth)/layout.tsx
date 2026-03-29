@@ -99,7 +99,7 @@ export default function AuthLayout({
   useEffect(() => {
     // Only redirect if user is logged in AND not on the forgot-password page
     if (!loading && user && userProfile && pathname !== '/forgot-password') {
-      if (user.email === 'admin@example.com') {
+      if (user.email === 'admin@bestantivirus.us') {
          router.push('/cms/admin');
       } else if (userProfile.role === 'reseller') {
           router.push('/reseller/dashboard');

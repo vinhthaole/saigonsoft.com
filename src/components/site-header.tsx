@@ -101,7 +101,7 @@ export function SiteHeader() {
     router.refresh();
   };
   
-  const isAdmin = user && user.email === 'admin@example.com';
+  const isAdmin = user && user.email === 'admin@bestantivirus.us';
   const isReseller = userProfile?.role === 'reseller';
 
   const navLinksContent = (
