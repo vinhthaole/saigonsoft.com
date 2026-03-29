@@ -1,0 +1,17 @@
+rules_version = '2';
+
+// Chỉ cho phép người dùng đã đăng nhập đọc và ghi vào tài khoản của họ.
+// Các tệp công khai có thể được đọc bởi bất kỳ ai.
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Cho phép đọc công khai các hình ảnh sản phẩm, logo, và tài sản trang web.
+    match /{folder}/{allPaths=**} where folder IN ['product_images', 'site_assets', 'company_assets', 'page-content'] {
+      allow read;
+    }
+
+    // Chỉ cho phép quản trị viên đã đăng nhập ghi (tải lên, cập nhật, xóa) vào các thư mục này.
+    match /{folder}/{allPaths=**} where folder IN ['product_images', 'site_assets', 'company_assets', 'page-content'] {
+      allow write: if request.auth != null;
+    }
+  }
+}

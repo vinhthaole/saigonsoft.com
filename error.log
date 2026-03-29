@@ -1,0 +1,16 @@
+remote: warning: File .firebase/saigonsoftcom-xrkmx/functions/.next/cache/webpack/server-production/index.pack is 52.62 MB; this is larger than GitHub's recommended maximum file size of 50.00 MB        
+remote: warning: File .firebase/saigonsoftcom-xrkmx/functions/.next/cache/webpack/server-production/0.pack is 83.40 MB; this is larger than GitHub's recommended maximum file size of 50.00 MB        
+remote: warning: File .firebase/saigonsoftcom-xrkmx/functions/.next/cache/webpack/client-production/0.pack is 60.09 MB; this is larger than GitHub's recommended maximum file size of 50.00 MB        
+remote: warning: File .firebase/saigonsoftcom-xrkmx/functions/.next/cache/webpack/client-production/1.pack is 56.87 MB; this is larger than GitHub's recommended maximum file size of 50.00 MB        
+remote: warning: File .firebase/saigonsoftcom-xrkmx/functions/.next/cache/webpack/server-production/2.pack is 89.40 MB; this is larger than GitHub's recommended maximum file size of 50.00 MB        
+remote: error: Trace: d72e8190a337847f53452b08c3af7ed6c5147f3acdb9ffc24e32207d2f319bf3        
+remote: error: See https://gh.io/lfs for more information.        
+remote: error: File .firebase/saigonsoftcom-xrkmx/functions/node_modules/@next/swc-linux-x64-musl/next-swc.linux-x64-musl.node is 141.89 MB; this exceeds GitHub's file size limit of 100.00 MB        
+remote: error: File .firebase/saigonsoftcom-xrkmx/functions/.next/cache/webpack/server-production/1.pack is 345.06 MB; this exceeds GitHub's file size limit of 100.00 MB        
+remote: error: File .firebase/saigonsoftcom-xrkmx/functions/node_modules/@next/swc-linux-x64-gnu/next-swc.linux-x64-gnu.node is 142.01 MB; this exceeds GitHub's file size limit of 100.00 MB        
+remote: error: File .firebase/saigonsoftcom-xrkmx/functions/.next/cache/webpack/server-production/0.pack is 272.74 MB; this exceeds GitHub's file size limit of 100.00 MB        
+remote: error: File .firebase/saigonsoftcom-xrkmx/functions/.next/cache/webpack/client-production/0.pack is 111.36 MB; this exceeds GitHub's file size limit of 100.00 MB        
+remote: error: GH001: Large files detected. You may want to try Git Large File Storage - https://git-lfs.github.com.        
+To https://github.com/vinhthaole/saigonsoft.com.git
+ ! [remote rejected]   master -> master (pre-receive hook declined)
+error: failed to push some refs to 'https://github.com/vinhthaole/saigonsoft.com.git'
