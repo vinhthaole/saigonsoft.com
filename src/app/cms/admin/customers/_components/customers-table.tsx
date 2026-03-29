@@ -90,10 +90,11 @@ function ResetPasswordMenuItem({ uid, customerName }: { uid: string, customerNam
             });
             
             try {
-                await resetCustomerPassword(uid);
+                const res = await resetCustomerPassword(uid);
                 toast({
+                    duration: 10000,
                     title: "Thành công",
-                    description: `Mật khẩu tạm thời đã được cấp và gửi đến email của ${customerName}.`,
+                    description: `Mật khẩu tạm đã được gửi. (Mật khẩu: ${res.temporaryPassword})`,
                 });
             } catch (error: any) {
                 toast({

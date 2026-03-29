@@ -15,27 +15,38 @@ export function ResetPasswordButton({ uid, customerName }: ResetPasswordButtonPr
     const { toast } = useToast();
     const [isPending, setIsPending] = useState(false);
 
-    const handleReset = async () => {
-        if (!confirm(`Bạn có chắc chắn muốn cấp lại mật khẩu mới tự động cho ${customerName} và gửi qua email không?`)) {
-            return;
-        }
+    const handleReset = () => {
+        // Use a short timeout to prevent any React rendering block during confirm
+        setTimeout(() => {
+            if (!confirm(`Bạn có chắc chắn muốn cấp lại mật khẩu mới tự động cho ${customerName} và gửi qua email không?`)) {
+                return;
+            }
 
-        setIsPending(true);
-        try {
-            await resetCustomerPassword(uid);
+            setIsPending(true);
             toast({
-                title: "Thành công",
-                description: `Mật khẩu tạm thời đã được gửi đến email của ${customerName}.`,
+                title: "Đang xử lý...",
+                description: "Hệ thống đang khởi tạo mật khẩu và gửi email. Vui lòng đợi.",
             });
-        } catch (error: any) {
-            toast({
-                variant: 'destructive',
-                title: 'Lỗi',
-                description: error.message || 'Không thể cấp lại mật khẩu.',
-            });
-        } finally {
-            setIsPending(false);
-        }
+
+            resetCustomerPassword(uid)
+                .then((res) => {
+                    toast({
+                        duration: 10000,
+                        title: "Thành công",
+                        description: `Mật khẩu tạm đã được gửi. (Mật khẩu: ${res.temporaryPassword})`,
+                    });
+                })
+                .catch((error: any) => {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Lỗi',
+                        description: error.message || 'Không thể cấp lại mật khẩu.',
+                    });
+                })
+                .finally(() => {
+                    setIsPending(false);
+                });
+        }, 150);
     };
 
     return (

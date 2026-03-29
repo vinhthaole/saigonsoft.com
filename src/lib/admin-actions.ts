@@ -179,13 +179,14 @@ export async function resetCustomerPassword(uid: string) {
             password: temporaryPassword,
         });
         
-        // Send email with the temporary password
-        await sendTemporaryPasswordEmail({
+        // Send email with the temporary password asynchronously (we fire and forget)
+        // so that if SMTP gets stuck or times out, the UI doesn't hang.
+        sendTemporaryPasswordEmail({
             name: userRecord.displayName || 'Khách hàng',
             email: userRecord.email
-        }, temporaryPassword);
+        }, temporaryPassword).catch((e: any) => console.error("Background email failed:", e));
         
-        return { success: true };
+        return { success: true, temporaryPassword };
     } catch (error: any) {
         console.error("Error resetting customer password:", error);
         throw new Error(error.message || "Failed to reset password.");
