@@ -155,3 +155,35 @@ export async function emptyCustomerTrash() {
 export async function syncUsersFromAuth() {
     throw new Error('This function is deprecated and should not be used. Customer data is now derived from orders and the users collection.');
 }
+
+export async function resetCustomerPassword(uid: string) {
+    if (!uid) throw new Error("User ID is required.");
+    
+    const { getAuth } = await import('firebase-admin/auth');
+    const { getFirebaseAdminApp } = await import('@/lib/firebase-admin');
+    const { sendTemporaryPasswordEmail } = await import('@/lib/email');
+    const { randomBytes } = await import('crypto');
+
+    const adminAuth = getAuth(getFirebaseAdminApp());
+    const userRecord = await adminAuth.getUser(uid);
+    
+    if (!userRecord.email) {
+        throw new Error("Người dùng này không có địa chỉ email.");
+    }
+    
+    // Generate a random temporary password (12 chars hex)
+    const temporaryPassword = randomBytes(6).toString('hex');
+    
+    // Update password in Firebase Auth
+    await adminAuth.updateUser(uid, {
+        password: temporaryPassword,
+    });
+    
+    // Send email with the temporary password
+    await sendTemporaryPasswordEmail({
+        name: userRecord.displayName || 'Khách hàng',
+        email: userRecord.email
+    }, temporaryPassword);
+    
+    return true;
+}

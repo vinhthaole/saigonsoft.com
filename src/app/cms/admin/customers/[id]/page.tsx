@@ -28,6 +28,7 @@ import { CustomerRoleForm } from "./_components/customer-role-form";
 import { serializeForClient } from "@/lib/serializeForClient";
 import { CustomerLoyaltyForm } from "./_components/customer-loyalty-form";
 import { CustomerInfoForm } from "./_components/customer-info-form";
+import { ResetPasswordButton } from "./_components/reset-password-button";
 
 type NextPageProps = import('/home/user/studio/.next/types/app/cms/admin/customers/[id]/page').PageProps;
 
@@ -106,6 +107,9 @@ export default async function CustomerDetailsPage({ params }: NextPageProps) {
                             <p className="text-sm text-muted-foreground">{profile.email}</p>
                         </div>
                     </div>
+                </div>
+                <div className="flex items-center gap-2">
+                    <ResetPasswordButton uid={profile.uid} customerName={profile.displayName || 'Khách hàng'} />
                 </div>
             </header>
 
