@@ -22,7 +22,9 @@ import {
   Sheet,
   SheetContent,
   SheetTrigger,
-  SheetClose
+  SheetClose,
+  SheetTitle,
+  SheetDescription
 } from "@/components/ui/sheet"
 import {
   Dialog,
@@ -161,6 +163,8 @@ export function SiteHeader() {
                 </Button>
               </SheetTrigger>
               <SheetContent side="left" className="w-[300px] p-4">
+                 <SheetTitle className="sr-only">Menu</SheetTitle>
+                 <SheetDescription className="sr-only">Navigation Menu</SheetDescription>
                  <div className="flex justify-between items-center mb-6">
                     <Link href="/" className="flex items-center space-x-2" onClick={() => setIsMenuOpen(false)}>
                        {logoUrl && <Image src={logoUrl} alt="Saigonsoft.com Logo" width={150} height={30} className="h-8" style={{ width: 'auto' }} />}
