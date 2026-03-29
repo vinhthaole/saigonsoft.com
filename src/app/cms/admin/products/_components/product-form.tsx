@@ -439,6 +439,30 @@ export function ProductForm({ initialData, categories, brands }: ProductFormProp
     }
   };
   
+  const onError = (errors: any) => {
+    // Find the first error string recursively.
+    let firstErrorMsg = 'Vui lòng điền đầy đủ thông tin bắt buộc.';
+    const traverseErrors = (obj: any) => {
+        for (const key in obj) {
+            if (obj[key]?.message) {
+                firstErrorMsg = obj[key].message;
+                return true;
+            }
+            if (typeof obj[key] === 'object' && obj[key] !== null) {
+                if (traverseErrors(obj[key])) return true;
+            }
+        }
+        return false;
+    };
+    traverseErrors(errors);
+    
+    toast({
+        variant: 'destructive',
+        title: 'Lỗi thông tin',
+        description: firstErrorMsg,
+    });
+  };
+
   const titleText = initialData ? 'Sửa sản phẩm' : 'Thêm sản phẩm mới';
   const description = initialData ? 'Chỉnh sửa thông tin chi tiết của sản phẩm.' : 'Điền vào biểu mẫu dưới đây để tạo một sản phẩm mới.';
   const action = initialData ? 'Lưu thay đổi' : 'Tạo sản phẩm';
@@ -525,7 +549,7 @@ export function ProductForm({ initialData, categories, brands }: ProductFormProp
         <Separator />
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <form onSubmit={form.handleSubmit(onSubmit, onError)} className="space-y-8">
             {/* Main Details Card */}
             <Card>
                 <CardHeader>
