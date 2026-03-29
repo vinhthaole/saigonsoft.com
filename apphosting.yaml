@@ -1,0 +1,6 @@
+env:
+  - variable: NEXT_PUBLIC_SITE_URL
+    value: https://www.saigonsoft.com
+    availability:
+      - BUILD
+      - RUNTIME

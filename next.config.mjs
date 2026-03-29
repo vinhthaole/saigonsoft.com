@@ -26,6 +26,16 @@ const nextConfig = {
     },
     // serverActionsTimeout: 120000, // 2 minutes - Removed as it's unrecognized
   },
+  async redirects() {
+    return [
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: 'saigonsoft.com' }],
+        destination: 'https://www.saigonsoft.com/:path*',
+        permanent: true, // 301 redirect - tốt cho SEO
+      },
+    ];
+  },
 };
 
 export default nextConfig;
