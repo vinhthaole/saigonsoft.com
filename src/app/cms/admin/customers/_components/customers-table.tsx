@@ -75,35 +75,39 @@ function LoyaltyBadge({ tier }: { tier: LoyaltyTier }) {
 
 function ResetPasswordMenuItem({ uid, customerName }: { uid: string, customerName: string }) {
     const { toast } = useToast();
-    const [isPending, setIsPending] = useState(false);
 
-    const handleSelect = async (e: Event) => {
-        e.preventDefault(); // Keep dropdown open while pending
-        if (!confirm(`Bạn có chắc chắn muốn cấp lại mật khẩu mới tự động cho ${customerName} và gửi qua email không?`)) {
-            return;
-        }
-        
-        setIsPending(true);
-        try {
-            await resetCustomerPassword(uid);
+    const handleSelect = (e: Event) => {
+        // Allow the dropdown to gracefully close before popping up a native confirm dialog
+        // This prevents the dreaded Radix UI focus-trap deadlock "bị đơ"
+        setTimeout(async () => {
+            if (!confirm(`Bạn có chắc chắn muốn cấp lại mật khẩu mới tự động cho ${customerName} và gửi qua email không?`)) {
+                return;
+            }
+            
             toast({
-                title: "Thành công",
-                description: `Mật khẩu tạm thời đã được gửi đến email của ${customerName}.`,
+                title: "Đang xử lý...",
+                description: `Hệ thống đang khởi tạo mật khẩu và gửi email. Vui lòng đợi.`,
             });
-        } catch (error: any) {
-            toast({
-                variant: 'destructive',
-                title: 'Lỗi',
-                description: error.message || 'Không thể cấp lại mật khẩu.',
-            });
-        } finally {
-            setIsPending(false);
-        }
+            
+            try {
+                await resetCustomerPassword(uid);
+                toast({
+                    title: "Thành công",
+                    description: `Mật khẩu tạm thời đã được cấp và gửi đến email của ${customerName}.`,
+                });
+            } catch (error: any) {
+                toast({
+                    variant: 'destructive',
+                    title: 'Lỗi',
+                    description: error.message || 'Không thể cấp lại mật khẩu.',
+                });
+            }
+        }, 150);
     };
 
     return (
-        <DropdownMenuItem onSelect={handleSelect} disabled={isPending} className="text-amber-600 focus:text-amber-600 cursor-pointer">
-            {isPending ? <LoaderCircle className="mr-2 h-4 w-4 animate-spin" /> : <Key className="mr-2 h-4 w-4" />}
+        <DropdownMenuItem onSelect={handleSelect} className="text-amber-600 focus:text-amber-600 cursor-pointer">
+            <Key className="mr-2 h-4 w-4" />
             Cấp lại mật khẩu tạm
         </DropdownMenuItem>
     );
