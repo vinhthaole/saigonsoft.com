@@ -145,7 +145,7 @@ export default function AdminLayout({
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen">
+      <div className="flex min-h-screen w-full">
         <Sidebar side="left" collapsible="icon">
           <SidebarHeader>
               <div className="flex items-center gap-2 h-8 justify-center group-data-[state=expanded]:justify-start" data-sidebar="logo">
