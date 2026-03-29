@@ -8,6 +8,11 @@ const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT
   ? JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)
   : undefined;
 
+// Firebase Admin SDK requires proper newlines in the PEM private key
+if (serviceAccount && serviceAccount.private_key) {
+    serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
+}
+
 let adminApp: admin.app.App;
 
 /**
