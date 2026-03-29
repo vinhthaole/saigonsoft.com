@@ -55,8 +55,9 @@ export async function middleware(request: NextRequest) {
         // E.g. saigonsoft.com -> www.saigonsoft.com
         if (currentHost !== targetHost) {
           const newUrl = new URL(url.href);
-          newUrl.host = targetHost;
           newUrl.protocol = targetUrl.protocol;
+          newUrl.hostname = targetUrl.hostname;
+          newUrl.port = targetUrl.port || ''; // Explicitly clear Cloud Run's internal 8080 port if target has no port
           
           return NextResponse.redirect(newUrl, { status: 308 }); // 308 Permanent Redirect for SEO
         }
