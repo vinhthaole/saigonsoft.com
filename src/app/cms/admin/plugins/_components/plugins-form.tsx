@@ -340,7 +340,7 @@ export function PluginsForm({ initialData, products, pages }: PluginsFormProps) 
                                                                         </FormControl>
                                                                         <FormLabel className="font-normal w-full cursor-pointer">
                                                                             <div className="flex items-center gap-2">
-                                                                                <Image src={product.imageUrl} alt={product.name} width={40} height={40} className="w-10 h-10 object-contain rounded-md border" />
+                                                                                <Image src={product.imageUrl || '/placeholder.svg'} alt={product.name} width={40} height={40} className="w-10 h-10 object-contain rounded-md border" />
                                                                                 <div>
                                                                                     <p className="font-medium">{product.name}</p>
                                                                                     <p className="text-xs text-muted-foreground">{product.brand}</p>

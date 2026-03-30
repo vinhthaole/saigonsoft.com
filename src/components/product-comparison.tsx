@@ -24,7 +24,7 @@ import { BrandLogo } from './brand-logo';
 import { getProducts } from '@/lib/data';
 import { Checkbox } from './ui/checkbox';
 import Image from 'next/image';
-import { useComparisonHistoryStore } from '@/store/comparison-history';
+import { getGlobalComparison, saveGlobalComparison } from '@/lib/data-comparisons';
 
 interface ProductComparisonProps {
   product: Product;
@@ -65,7 +65,6 @@ export function ProductComparison({ product }: ProductComparisonProps) {
   const [view, setView] = useState<'select' | 'result'>('select');
   const [isFromCache, setIsFromCache] = useState(false);
   const { toast } = useToast();
-  const { getComparison, addComparison } = useComparisonHistoryStore();
 
 
    useEffect(() => {
@@ -103,16 +102,18 @@ export function ProductComparison({ product }: ProductComparisonProps) {
         return;
     }
     
+    setIsLoading(true);
+    
     // Check cache first
-    const cachedResult = getComparison(product, selectedCompetitors);
+    const competitorIds = selectedCompetitors.map(c => c.id!);
+    const cachedResult = await getGlobalComparison(product.id!, competitorIds);
     if (cachedResult) {
         setComparison(cachedResult);
         setIsFromCache(true);
         setView('result');
+        setIsLoading(false);
         return;
     }
-
-    setIsLoading(true);
     setComparison(null);
     setIsFromCache(false);
     setView('result');
@@ -133,7 +134,8 @@ export function ProductComparison({ product }: ProductComparisonProps) {
         competitors: competitorInfo,
       });
       setComparison(result);
-      addComparison(product, selectedCompetitors, result); // Save to cache
+      // Save globally
+      await saveGlobalComparison(product.id!, competitorIds, result);
     } catch (error) {
       console.error('Comparison generation failed:', error);
       toast({

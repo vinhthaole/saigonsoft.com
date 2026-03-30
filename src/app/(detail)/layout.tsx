@@ -16,10 +16,16 @@ function Footer() {
     const { user, userProfile } = useAuth();
     const config = useSiteConfig();
     const [columns, setColumns] = useState<FooterLinkColumn[]>([]);
+    const [companyName, setCompanyName] = useState('Saigonsoft.com');
+    const [companyAddress, setCompanyAddress] = useState('');
 
     useEffect(() => {
         if (!config) return;
-        let footerColumns = config?.footer?.linkColumns || [];
+        if (config?.companyInfo) {
+                setCompanyName(config.companyInfo.name || 'Saigonsoft.com');
+                setCompanyAddress(config.companyInfo.address || '');
+            }
+            let footerColumns = config?.footer?.linkColumns || [];
         
         // Filter columns based on auth status
         if (!user) {
@@ -67,12 +73,13 @@ function Footer() {
             </div>
             <div className="mt-12 border-t pt-8 flex flex-col justify-between items-center text-xs text-muted-foreground gap-4">
                 <div className="flex flex-wrap gap-x-4 gap-y-2 justify-center">
-                    <Link href="/pages/contact" className="hover:underline">Liên hệ Saigonsoft.com</Link>
+                    <Link href="/pages/contact" className="hover:underline">Liên hệ {companyName}</Link>
                     <Link href="/pages/privacy-policy" className="hover:underline">Quyền riêng tư</Link>
                     <Link href="/pages/terms-of-use" className="hover:underline">Điều khoản sử dụng</Link>
                     <Link href="/pages/trademarks" className="hover:underline">Thương hiệu</Link>
                 </div>
-                <p>&copy; {new Date().getFullYear()} Saigonsoft.com</p>
+                <p>&copy; {new Date().getFullYear()} {companyName}</p>
+                {companyAddress && <p className="max-w-md text-center">{companyAddress}</p>}
                 <p>SG e-Commerce Platform v1.2</p>
             </div>
             </div>

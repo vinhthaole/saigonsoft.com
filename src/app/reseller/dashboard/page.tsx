@@ -163,7 +163,7 @@ export default function ResellerDashboard() {
                             {topProducts.map(product => (
                                 <div key={product.id} className="flex items-center gap-4 p-2 rounded-md hover:bg-secondary/50">
                                     <Image
-                                        src={product.imageUrl}
+                                        src={product.imageUrl || '/placeholder.svg'}
                                         alt={product.name}
                                         width={48}
                                         height={48}

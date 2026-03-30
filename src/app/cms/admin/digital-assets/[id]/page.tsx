@@ -299,7 +299,7 @@ export default function DigitalAssetManagementPage() {
             </Button>
             <div className="flex items-center gap-4">
                 <Image
-                    src={product.imageUrl}
+                    src={product.imageUrl || '/placeholder.svg'}
                     alt={product.name}
                     width={64}
                     height={64}

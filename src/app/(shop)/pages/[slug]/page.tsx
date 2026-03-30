@@ -74,12 +74,25 @@ export async function generateMetadata(
 
 export default async function GenericPage({ params }: NextPageProps) {
     const resolvedParams = await params;
-    const page = await getPageBySlug(resolvedParams.slug);
+    const [page, siteConfig] = await Promise.all([
+        getPageBySlug(resolvedParams.slug),
+        getSiteConfig()
+    ]);
 
     if (!page) {
         notFound();
     }
     
+    // Replace dynamic placeholders with actual company info
+    const content = page.content ? page.content
+        .replace(/{{company\.name}}/g, siteConfig.companyInfo?.name || '')
+        .replace(/{{company\.address}}/g, siteConfig.companyInfo?.address || '')
+        .replace(/{{company\.phone}}/g, siteConfig.companyInfo?.phone || '')
+        .replace(/{{company\.email}}/g, siteConfig.companyInfo?.email || '')
+        .replace(/{{company\.website}}/g, siteConfig.companyInfo?.websiteUrl || '')
+        .replace(/{{company\.taxCode}}/g, siteConfig.companyInfo?.taxCode || '')
+        : '';
+
     return (
         <div className="max-w-4xl mx-auto space-y-6">
             <header>
@@ -92,7 +105,7 @@ export default async function GenericPage({ params }: NextPageProps) {
                 <CardContent className="p-6">
                     <div
                         className="prose dark:prose-invert max-w-none [&_a]:text-primary [&_img]:rounded-md [&_img]:border"
-                        dangerouslySetInnerHTML={{ __html: page.content }}
+                        dangerouslySetInnerHTML={{ __html: content }}
                     />
                 </CardContent>
             </Card>

@@ -4,6 +4,9 @@ export const VariantGeneratorInputSchema = z.object({
   productName: z.string().describe('The name of the software product.'),
   licenseType: z.enum(['Subscription', 'Perpetual']).describe('The license type of the product.'),
   brand: z.string().describe('The brand of the software product.'),
+  shortDescription: z.string().optional().describe('A short description of the product to provide context on its capabilities.'),
+  categoryName: z.string().optional().describe('The category name of the product.'),
+  mfr: z.string().optional().describe('The manufacturer part number (if any) to help identify the exact product line.'),
 });
 export type VariantGeneratorInput = z.infer<typeof VariantGeneratorInputSchema>;
 

@@ -8,7 +8,7 @@ export function ProductList() {
   const filteredProducts = useProductStore((state) => state.filteredProducts);
 
   return (
-    <div className="space-y-8">
+    <div id="product-grid-top" className="space-y-8 mt-2">
       {filteredProducts.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredProducts.map((product) => (

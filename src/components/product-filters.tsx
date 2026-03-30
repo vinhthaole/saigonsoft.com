@@ -11,6 +11,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
+import { Button } from '@/components/ui/button';
+import { RotateCcw } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { useProductStore } from '@/store/product';
@@ -38,7 +40,17 @@ export function ProductFilters({ categories, brands, licenseTypes, enabledFilter
     setOnSale,
     setInStock,
     setNewArrivals,
+    resetFilters,
+    searchTerm,
   } = useProductStore();
+
+  const hasActiveFilters = selectedCategories.length > 0 || 
+                           selectedBrands.length > 0 || 
+                           selectedLicenseTypes.length > 0 || 
+                           onSale || 
+                           inStock || 
+                           newArrivals || 
+                           searchTerm !== '';
 
   const filterGroups = useMemo(() => [
     {
@@ -96,7 +108,20 @@ export function ProductFilters({ categories, brands, licenseTypes, enabledFilter
 
   return (
     <>
-      <h2 className="text-lg font-semibold mb-2">Bộ lọc</h2>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-lg font-semibold">Bộ lọc</h2>
+        {hasActiveFilters && (
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={resetFilters}
+            className="h-8 px-2 text-muted-foreground hover:text-foreground"
+          >
+            <RotateCcw className="mr-2 h-4 w-4" />
+            Xóa bộ lọc
+          </Button>
+        )}
+      </div>
       <div className="space-y-4">
         {toggleFilters.filter(f => f.enabled).map((filter) => (
              <div key={filter.id} className="flex items-center justify-between">

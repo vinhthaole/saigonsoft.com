@@ -52,7 +52,7 @@ import { vi } from 'date-fns/locale';
 import { FileUploader } from '../../appearance/_components/file-uploader';
 import { useDebounce } from 'use-debounce';
 import { getFriendlyErrorMessage } from '@/lib/utils';
-
+import { ProductDetailClient } from '@/app/(detail)/products/[slug]/_components/product-detail-client';
 
 const variantSchema = z.object({
   id: z.string(),
@@ -125,10 +125,32 @@ export function ProductForm({ initialData, categories, brands }: ProductFormProp
   const [isGeneratingSeo, setIsGeneratingSeo] = useState(false);
   const [aiProductName, setAiProductName] = useState('');
   const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
+  const [isLivePreviewOpen, setIsLivePreviewOpen] = useState(false);
+  const [livePreviewProduct, setLivePreviewProduct] = useState<Product | null>(null);
   const [autoSaveStatus, setAutoSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
   const formAction = initialData ? 'edit' : 'create';
   const LOCAL_STORAGE_KEY = `product-form-draft-${formAction}`;
 
+  const handleOpenLivePreview = () => {
+    const values = form.getValues();
+    const category = categories.find(c => c.slug === values.categoryId) || { id: 'temp', name: 'Unknown', slug: values.categoryId };
+    
+    const mockProduct: Product = {
+        ...values,
+        id: initialData?.id || 'preview-id',
+        status: initialData?.status || 'active',
+        category,
+        categoryId: category.id,
+        brand: values.brand,
+        currency: 'VND',
+        variants: values.variants as any,
+        reviews: values.reviews as any || [],
+        screenshots: values.screenshots?.filter(Boolean) || [],
+    } as unknown as Product;
+    
+    setLivePreviewProduct(mockProduct);
+    setIsLivePreviewOpen(true);
+  };
 
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(formSchema),
@@ -356,6 +378,10 @@ export function ProductForm({ initialData, categories, brands }: ProductFormProp
     const productName = form.getValues('name');
     const licenseType = form.getValues('licenseType');
     const brand = form.getValues('brand');
+    const shortDescription = form.getValues('shortDescription');
+    const mfr = form.getValues('mfr');
+    const categoryId = form.getValues('categoryId');
+    const categoryName = categories.find(c => c.slug === categoryId)?.name;
 
     if (!productName) {
         toast({
@@ -367,7 +393,7 @@ export function ProductForm({ initialData, categories, brands }: ProductFormProp
     }
     setIsGeneratingVariants(true);
     try {
-      const result = await generateProductVariants({ productName, licenseType, brand });
+      const result = await generateProductVariants({ productName, licenseType, brand, shortDescription, mfr, categoryName });
       
       const newVariants = result.variants.map(v => ({
           ...v,
@@ -475,6 +501,9 @@ export function ProductForm({ initialData, categories, brands }: ProductFormProp
   const description = initialData ? 'Chỉnh sửa thông tin chi tiết của sản phẩm.' : 'Điền vào biểu mẫu dưới đây để tạo một sản phẩm mới.';
   const action = initialData ? 'Lưu thay đổi' : 'Tạo sản phẩm';
   const isGenerating = isGeneratingDetails || isGeneratingScreenshots || isGeneratingVariants || isGeneratingSeo;
+  
+  const currentCategoryId = form.watch('categoryId') || 'uncategorized';
+  const uploadFolder = `product_images/${currentCategoryId}/${new Date().toISOString().slice(0, 7)}`;
 
   return (
     <>
@@ -557,7 +586,13 @@ export function ProductForm({ initialData, categories, brands }: ProductFormProp
         <Separator />
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit, onError)} className="space-y-8">
+        <form onSubmit={form.handleSubmit(onSubmit, onError)} className="space-y-8 relative">
+            <div className="sticky top-4 z-40 flex justify-end">
+                 <Button type="button" onClick={handleOpenLivePreview} variant="secondary" className="shadow-lg bg-green-100 text-green-700 hover:bg-green-200 border-green-200">
+                     <Eye className="mr-2 h-4 w-4" />
+                     Bản Xem Thử (Live Preview)
+                 </Button>
+            </div>
             {/* Main Details Card */}
             <Card>
                 <CardHeader>
@@ -891,7 +926,7 @@ export function ProductForm({ initialData, categories, brands }: ProductFormProp
                                     <FileUploader 
                                         value={field.value}
                                         onValueChange={field.onChange}
-                                        folder="product_images"
+                                        folder={uploadFolder}
                                     />
                                 </FormControl>
                                 <FormMessage />
@@ -926,14 +961,13 @@ export function ProductForm({ initialData, categories, brands }: ProductFormProp
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>URL Ảnh chụp màn hình {index + 1}</FormLabel>
-                                    <div className="flex gap-2">
-                                        <FormControl>
-                                            <Input placeholder="https://example.com/screenshot.jpg" {...field} value={field.value || ''} />
-                                        </FormControl>
-                                         <Button type="button" variant="outline" size="icon" onClick={() => setPreviewImageUrl(field.value)} disabled={!field.value}>
-                                            <Eye className="h-4 w-4" />
-                                         </Button>
-                                    </div>
+                                    <FormControl>
+                                        <FileUploader 
+                                            value={field.value || ''}
+                                            onValueChange={field.onChange}
+                                            folder={uploadFolder}
+                                        />
+                                    </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
@@ -996,6 +1030,31 @@ export function ProductForm({ initialData, categories, brands }: ProductFormProp
             </div>
         </form>
       </Form>
+      
+       <Dialog open={isLivePreviewOpen} onOpenChange={setIsLivePreviewOpen}>
+            <DialogContent className="max-w-[100vw] h-screen w-screen m-0 p-0 rounded-none border-none overflow-y-auto bg-background">
+                <DialogHeader className="sr-only">
+                    <DialogTitle>Bản Xem Thử Trực Tiếp</DialogTitle>
+                    <DialogDescription>Mô phỏng dữ liệu sản phẩm đang edit.</DialogDescription>
+                </DialogHeader>
+                <div className="p-8 pb-20 mt-8 relative">
+                    {/* Add a close button at top-right inside the modal for better UX */}
+                    <div className="absolute top-4 right-4 z-50">
+                       <Button variant="outline" size="sm" onClick={() => setIsLivePreviewOpen(false)}>
+                          Đóng xem thử
+                       </Button>
+                    </div>
+                    {livePreviewProduct && (
+                        <ProductDetailClient 
+                            product={livePreviewProduct} 
+                            relatedProducts={[]} 
+                            isPreviewMode={true}
+                            onPreviewClose={() => setIsLivePreviewOpen(false)}
+                        />
+                    )}
+                </div>
+            </DialogContent>
+        </Dialog>
     </div>
     </>
   );

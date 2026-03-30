@@ -61,7 +61,7 @@ export default async function AdminDigitalAssetsPage() {
                       alt={product.name}
                       className="aspect-square rounded-md object-cover"
                       height="64"
-                      src={product.imageUrl}
+                      src={product.imageUrl || '/placeholder.svg'}
                       width="64"
                       data-ai-hint={product.imageHint}
                     />

@@ -77,13 +77,13 @@ export default function ProductsTable({ data: products, onActionComplete, select
                 alt={product.name}
                 className="aspect-square rounded-md object-cover"
                 height="64"
-                src={product.imageUrl}
+                src={product.imageUrl || '/placeholder.svg'}
                 width="64"
                 data-ai-hint={product.imageHint}
               />
             </TableCell>
             <TableCell className="font-medium">
-              <Link href={`/products/${product.slug}`} className="hover:underline" target="_blank" rel="noopener noreferrer">
+              <Link href={`/cms/admin/products/${product.id}/edit`} className="hover:underline hover:text-primary">
                 {product.name}
               </Link>
             </TableCell>

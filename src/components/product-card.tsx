@@ -66,7 +66,7 @@ export function ProductCard({ product, showPrice = true }: ProductCardProps) {
           </div>
           <div className="aspect-square overflow-hidden relative">
             <Image
-              src={product.imageUrl}
+              src={product.imageUrl || '/placeholder.svg'}
               alt={product.name}
               width={1200}
               height={1200}

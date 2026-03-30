@@ -7,6 +7,20 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { subDays } from 'date-fns';
 
+const scrollToGrid = () => {
+  if (typeof window !== 'undefined') {
+    // We want to scroll to the top of the product grid area smoothly
+    const grid = document.getElementById('product-grid-top');
+    if (grid) {
+      // 120px offset to account for sticky headers
+      const top = grid.getBoundingClientRect().top + window.scrollY - 120;
+      window.scrollTo({ top, behavior: 'smooth' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+};
+
 interface ProductState {
   initialProducts: Product[];
   filteredProducts: Product[];
@@ -27,6 +41,7 @@ interface ProductState {
   setOnSale: (value: boolean) => void;
   setInStock: (value: boolean) => void;
   setNewArrivals: (value: boolean) => void;
+  resetFilters: () => void;
 }
 
 const toggleSelection = (
@@ -153,6 +168,7 @@ export const useProductStore = create<ProductState>((set, get) => ({
   setSearchTerm: (term) => {
     set({ searchTerm: term });
     get().filterProducts();
+    scrollToGrid();
   },
 
   toggleCategory: (categorySlug, force) => {
@@ -167,6 +183,7 @@ export const useProductStore = create<ProductState>((set, get) => ({
       })
     );
     get().filterProducts();
+    scrollToGrid();
   },
 
   toggleBrand: (brand, force) => {
@@ -181,6 +198,7 @@ export const useProductStore = create<ProductState>((set, get) => ({
       })
     );
     get().filterProducts();
+    scrollToGrid();
   },
 
   toggleLicenseType: (licenseType, force) => {
@@ -195,21 +213,40 @@ export const useProductStore = create<ProductState>((set, get) => ({
       })
     );
     get().filterProducts();
+    scrollToGrid();
   },
 
   setOnSale: (value) => {
     set({ onSale: value, searchTerm: '' });
     get().filterProducts();
+    scrollToGrid();
   },
 
   setInStock: (value) => {
     set({ inStock: value, searchTerm: '' });
     get().filterProducts();
+    scrollToGrid();
   },
 
   setNewArrivals: (value) => {
     set({ newArrivals: value, searchTerm: '' });
     get().filterProducts();
+    scrollToGrid();
+  },
+
+  resetFilters: () => {
+    set({
+      selectedCategories: [],
+      selectedBrands: [],
+      selectedLicenseTypes: [],
+      searchTerm: '',
+      onSale: false,
+      inStock: false,
+      newArrivals: false,
+    });
+    get().filterProducts();
+    // Do not scrollToGrid here, resting naturally at top or current position is fine, 
+    // or we can optionally scroll. We'll leave it without scroll to avoid jumping to top when resetting.
   },
 }));
 

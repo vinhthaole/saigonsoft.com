@@ -24,14 +24,14 @@ ${categories.map(c => `- ${c.name} (slug: ${c.slug})`).join('\n')}
 3.  **categoryId**: Slug của danh mục **phù hợp nhất** từ danh sách được cung cấp.
 4.  **shortDescription**: Viết một mô tả ngắn gọn, hấp dẫn về sản phẩm (khoảng 150 ký tự).
 5.  **longDescription**: Viết một mô tả chi tiết về sản phẩm, các tính năng và lợi ích của nó (khoảng 500 ký tự).
-6.  **price**: Đề xuất một mức giá bán lẻ hợp lý bằng Việt Nam Đồng (VND).
-7.  **salePrice**: Đề xuất một mức giá bán khuyến mãi hợp lý, có thể giống như giá gốc nếu không có khuyến mãi.
+6.  **price**: Đề xuất mức giá bán lẻ chính xác nhất (MSRP) bằng Việt Nam Đồng (VND), dựa trên giá hãng.
+7.  **salePrice**: Đề xuất mức giá bán khuyến mãi hợp lý (với mức giảm giá từ 10% đến 40% so với giá gốc) bằng Việt Nam Đồng.
 8.  **sku**: Tạo một Mã đơn vị lưu kho (SKU) cho cửa hàng, theo định dạng "SGS-[THUONGHIEU]-[TENSP]".
-9.  **mfr**: Tạo một mã nhà sản xuất (MFR) hoặc SKU chính thức của sản phẩm. Đây là một trường bắt buộc.
+9.  **mfr**: Tạo mã nhà sản xuất thực tế (MFR - Manufacturer Part Number) tương ứng với sản phẩm phần mềm này trên thị trường thật. Đây là trường bắt buộc để Google Merchant Center nhận diện.
 10. **imageHint**: Hai hoặc ba từ khóa bằng **tiếng Anh** có thể được sử dụng để tìm một bức ảnh stock phù hợp cho sản phẩm này (ví dụ: "photo editing software").`;
 
   const { output } = await ai.generate({
-      model: modelName,
+      model: 'googleai/gemini-2.5-pro',
       prompt: promptText,
       output: { schema: ProductDetailsOutputSchema }
   });

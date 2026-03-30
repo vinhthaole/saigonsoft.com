@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import { serializeForClient } from "@/lib/serializeForClient";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Eye } from "lucide-react";
 
 type NextPageProps = { params: Promise<{ id: string }> };
 
@@ -26,17 +26,19 @@ export default async function EditProductPage({ params }: NextPageProps) {
 
     return (
         <div className="flex flex-col gap-6">
-            <header>
-                <Button variant="outline" asChild className="mb-4">
-                    <Link href="/cms/admin/products">
-                        <ArrowLeft className="mr-2 h-4 w-4" />
-                        Quay lại danh sách sản phẩm
-                    </Link>
-                </Button>
-                 <h1 className="text-2xl font-semibold">Sửa sản phẩm</h1>
-                <p className="text-muted-foreground mt-1">
-                    Chỉnh sửa thông tin chi tiết của sản phẩm.
-                </p>
+            <header className="flex items-center justify-between mb-2">
+                <div>
+                    <Button variant="outline" asChild className="mb-4">
+                        <Link href="/cms/admin/products">
+                            <ArrowLeft className="mr-2 h-4 w-4" />
+                            Quay lại danh sách sản phẩm
+                        </Link>
+                    </Button>
+                    <h1 className="text-2xl font-semibold">Sửa sản phẩm</h1>
+                    <p className="text-muted-foreground mt-1">
+                        Chỉnh sửa thông tin chi tiết của sản phẩm.
+                    </p>
+                </div>
             </header>
             <ProductForm initialData={safeProduct} categories={categories} brands={brands} />
         </div>

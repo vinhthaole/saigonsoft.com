@@ -117,7 +117,7 @@ export function GlobalSearch({ onSelect }: { onSelect?: () => void }) {
                         >
                             <div className="flex items-center gap-4">
                                 <Image
-                                src={product.imageUrl}
+                                src={product.imageUrl || '/placeholder.svg'}
                                 alt={product.name}
                                 width={48}
                                 height={48}

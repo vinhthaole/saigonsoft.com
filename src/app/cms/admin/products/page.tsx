@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { PlusCircle, Search } from 'lucide-react';
 import Link from 'next/link';
 import ProductsTable from './_components/products-table';
+import { AutoCompareButton } from './_components/auto-compare-button';
 import { serializeForClient } from '@/lib/serializeForClient';
 import { useEffect, useState, Suspense, useCallback, useTransition } from 'react';
 import type { Product, Brand } from '@/lib/types';
@@ -172,6 +173,7 @@ function ProductsPageContent({ brands }: { brands: Brand[] }) {
                     </p>
                 </div>
                 <div className="flex items-center gap-2">
+                    <AutoCompareButton />
                     <Button asChild>
                         <Link href="/cms/admin/products/new">
                             <PlusCircle className="mr-2 h-4 w-4" />

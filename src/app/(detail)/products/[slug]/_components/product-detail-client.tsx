@@ -59,9 +59,13 @@ const getDateFromTimestamp = (date: Date | Timestamp): Date => {
 export function ProductDetailClient({
   product,
   relatedProducts,
+  isPreviewMode,
+  onPreviewClose,
 }: {
   product: Product;
   relatedProducts: Product[];
+  isPreviewMode?: boolean;
+  onPreviewClose?: () => void;
 }) {
   const router = useRouter();
   const [carouselApi, setCarouselApi] = useState<CarouselApi>();
@@ -116,8 +120,8 @@ export function ProductDetailClient({
   const isSaleActive =
     selectedVariant?.salePrice &&
     selectedVariant.salePrice < selectedVariant.price &&
-    (!selectedVariant.saleStartDate || getDateFromTimestamp(selectedVariant.saleStartDate) <= now) &&
-    (!selectedVariant.saleEndDate || getDateFromTimestamp(selectedVariant.saleEndDate) >= now);
+    (!selectedVariant.saleStartDate || new Date(getDateFromTimestamp(selectedVariant.saleStartDate).setHours(0, 0, 0, 0)) <= now) &&
+    (!selectedVariant.saleEndDate || new Date(getDateFromTimestamp(selectedVariant.saleEndDate).setHours(23, 59, 59, 999)) >= now);
 
   const isSelectedVariantInStock =
     selectedVariant.licenseKeys?.available && selectedVariant.licenseKeys.available.length > 0;
@@ -138,10 +142,17 @@ export function ProductDetailClient({
   return (
     <div className="mx-auto max-w-7xl space-y-12">
       <div className="mb-4">
-        <Button variant="outline" onClick={() => router.back()}>
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Quay lại cửa hàng
-        </Button>
+        {isPreviewMode ? (
+          <Button variant="outline" onClick={() => onPreviewClose?.()}>
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Quay lại chỉnh sửa
+          </Button>
+        ) : (
+          <Button variant="outline" onClick={() => router.back()}>
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Quay lại cửa hàng
+          </Button>
+        )}
       </div>
       {/* Top section: Image and main info */}
       <div className="grid md:grid-cols-2 gap-8 lg:gap-16 items-start">
@@ -238,7 +249,7 @@ export function ProductDetailClient({
                     !variant.licenseKeys?.available || variant.licenseKeys.available.length === 0;
                   
                   let variantFinalPrice = variant.price;
-                   const variantIsSaleActive = variant.salePrice && variant.salePrice < variant.price && (!variant.saleStartDate || getDateFromTimestamp(variant.saleStartDate) <= now) && (!variant.saleEndDate || getDateFromTimestamp(variant.saleEndDate) >= now);
+                   const variantIsSaleActive = variant.salePrice && variant.salePrice < variant.price && (!variant.saleStartDate || new Date(getDateFromTimestamp(variant.saleStartDate).setHours(0, 0, 0, 0)) <= now) && (!variant.saleEndDate || new Date(getDateFromTimestamp(variant.saleEndDate).setHours(23, 59, 59, 999)) >= now);
 
                   if (userProfile?.role === 'reseller' && variant.resellerPrice) {
                       variantFinalPrice = variant.resellerPrice;
