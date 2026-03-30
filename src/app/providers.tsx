@@ -11,6 +11,11 @@ import {
   PromoToast,
 } from '@/plugins/registry';
 import { useEffect } from 'react';
+import dynamic from 'next/dynamic';
+
+const SaigonsoftBot = dynamic(() => import('@/components/saigonsoft-bot').then((mod) => mod.SaigonsoftBot), {
+  ssr: false,
+});
 
 // This component is no longer needed as font loading is handled in the root layout.
 function DynamicFontLoader() {
@@ -33,6 +38,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
         <PromoToast />
         <LivechatScript />
         <AnalyticsScript />
+        <SaigonsoftBot />
       </AuthProvider>
     </ThemeProvider>
   );

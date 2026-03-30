@@ -27,6 +27,7 @@ import {
   Sun,
   Moon,
   Trophy,
+  Bot,
 } from 'lucide-react';
 import {
   Sheet,
@@ -87,6 +88,7 @@ const settingsNavItems = [
      { href: '/cms/admin/payments', icon: CreditCard, label: 'Cổng thanh toán' },
      { href: '/cms/admin/tax', icon: ReceiptText, label: 'Thuế' },
      { href: '/cms/admin/integrations', icon: Share2, label: 'Tích hợp & API' },
+     { href: '/cms/admin/saigonsoft-bot', icon: Bot, label: 'Trợ lý AI' },
      { href: '/cms/admin/moderators', icon: UserCog, label: 'Quản trị viên' },
 ]
 

@@ -2,7 +2,7 @@
 'use server';
 
 import { db } from '@/lib/firebase';
-import { sendBackInStockEmail } from '@/lib/email';
+import { sendStockSubscriptionConfirmationEmail } from '@/lib/email';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { z } from 'zod';
 
@@ -25,6 +25,14 @@ export async function addStockNotification(data: z.infer<typeof stockNotificatio
             createdAt: serverTimestamp(),
             notified: false,
         });
+
+        // Fire and forget email confirmation
+        sendStockSubscriptionConfirmationEmail({
+            email: validatedData.email,
+            productName: validatedData.productName,
+            variantName: validatedData.variantName,
+        }).catch(err => console.error('Failed to send stock subscription email:', err));
+        
     } catch (error) {
         console.error("Error adding stock notification:", error);
         throw new Error("Could not save notification request.");

@@ -217,3 +217,29 @@ export async function sendForgotPasswordEmail(email: string) {
     const fullHtml = getBaseTemplate(config, body);
     await sendEmail(email, subject, fullHtml);
 }
+
+export async function sendStockSubscriptionConfirmationEmail(payload: {
+  email: string;
+  productName: string;
+  variantName: string;
+}) {
+    const { email, productName, variantName } = payload;
+    const config = await getSiteConfig();
+    
+    const subject = `Xác nhận đăng ký nhận thông báo - ${config.companyInfo.name || 'Saigonsoft'}`;
+    const friendlyVariant = variantName.toLowerCase() === 'mặc định' ? '' : ` (${variantName})`;
+    
+    let body = `
+        <h2 style="color: #2c3e50;">Xin chào,</h2>
+        <p>Cảm ơn bạn đã quan tâm đến sản phẩm của chúng tôi.</p>
+        <p>Hệ thống đã ghi nhận yêu cầu nhận thông báo của bạn đối với sản phẩm:</p>
+        <div style="background-color: #f8f9fa; padding: 15px; border-left: 4px solid #0056b3; margin: 20px 0;">
+            <p style="margin: 0; font-weight: bold; font-size: 16px;">${productName}${friendlyVariant}</p>
+        </div>
+        <p>Ngay khi sản phẩm này có hàng trở lại, chúng tôi sẽ lập tức gửi email thông báo để bạn có thể đặt mua ngay.</p>
+        <p>Trân trọng,<br>Đội ngũ ${config.companyInfo.name || 'Saigonsoft'}</p>
+    `;
+
+    const fullHtml = getBaseTemplate(config, body);
+    await sendEmail(email, subject, fullHtml);
+}
