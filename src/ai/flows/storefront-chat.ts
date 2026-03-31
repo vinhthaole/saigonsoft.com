@@ -8,6 +8,7 @@ import type { MessageData } from 'genkit';
 export type StoreChatMessage = {
   role: 'user' | 'model';
   content: string;
+  media?: string; // Base64 Data URI
 };
 
 // Caching the string so we don't rebuild it on every single chat ping
@@ -42,10 +43,16 @@ export async function chatWithStoreBot(history: StoreChatMessage[]): Promise<str
         const knowledgePrompt = await buildKnowledgeContext();
 
         // Convert our simplified message format to Genkit's 'messages' format
-        const messages = history.map(msg => ({
-            role: msg.role,
-            content: [{ text: msg.content }]
-        }));
+        const messages = history.map(msg => {
+            const parts: any[] = [{ text: msg.content }];
+            if (msg.media) {
+                parts.push({ media: { url: msg.media } });
+            }
+            return {
+                role: msg.role,
+                content: parts
+            };
+        });
 
         // Inject the huge system instruction + database at the very start as a SYSTEM message
         const finalMessages = [

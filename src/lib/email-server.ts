@@ -16,7 +16,7 @@ export async function sendEmail(to: string, subject: string, htmlBody: string) {
     }
     
     const payload = {
-        From: `Saigonsoft.com <${fromEmail}>`,
+        From: `Saigonsoft <${fromEmail}>`,
         To: to,
         Subject: subject,
         HtmlBody: htmlBody,

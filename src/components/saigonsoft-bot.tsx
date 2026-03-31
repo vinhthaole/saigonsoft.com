@@ -1,17 +1,16 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, memo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardContent, CardFooter, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { MessageCircle, X, Send, Bot, User, LoaderCircle } from 'lucide-react';
+import { MessageCircle, X, Send, Bot, User, LoaderCircle, Trash2, Maximize2, Minimize2, Image as ImageIcon } from 'lucide-react';
 import { chatWithStoreBot, type StoreChatMessage } from '@/ai/flows/storefront-chat';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { usePathname } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
 import { useChatBotStore } from '@/store/chat-bot';
-import { Trash2, Maximize2, Minimize2 } from 'lucide-react';
 import Link from 'next/link';
 
 function ThinkingIndicator() {
@@ -32,14 +31,63 @@ function ThinkingIndicator() {
     );
 }
 
+const markdownComponents = {
+    p: ({node, ...props}: any) => <p className="mb-2 last:mb-0" {...props} />,
+    strong: ({node, ...props}: any) => <strong className="font-semibold" {...props} />,
+    ul: ({node, ...props}: any) => <ul className="list-disc pl-5 my-2 space-y-1" {...props} />,
+    ol: ({node, ...props}: any) => <ol className="list-decimal pl-5 my-2 space-y-1" {...props} />,
+    li: ({node, ...props}: any) => <li className="pl-1" {...props} />,
+    a: ({node, href, ...props}: any) => {
+        let finalHref = href || '#';
+        
+        try {
+            const url = new URL(finalHref);
+            if (url.hostname.toLowerCase().includes('saigonsoft') || 
+                url.hostname.includes('localhost') || 
+                url.hostname.includes('127.0.0.1')) {
+                finalHref = url.pathname + url.search + url.hash;
+            }
+        } catch(e) {}
+        
+        if (finalHref.startsWith('/')) {
+            return <Link href={finalHref} onClick={() => useChatBotStore.getState().setIsOpen(false)} className="text-blue-600 hover:text-blue-800 underline underline-offset-2 font-medium" {...props as any} />
+        }
+        
+        return <a href={finalHref} onClick={() => useChatBotStore.getState().setIsOpen(false)} className="text-blue-600 hover:text-blue-800 underline underline-offset-2 font-medium" {...props} />
+    },
+};
+
+const ChatBubble = memo(({ msg }: { msg: StoreChatMessage }) => {
+    return (
+        <div className={`
+            p-3 rounded-2xl max-w-[85%] break-words leading-relaxed shadow-sm
+            ${msg.role === 'user' 
+                ? 'bg-primary text-primary-foreground rounded-tr-sm' 
+                : 'bg-white border text-foreground rounded-tl-sm'}
+        `}>
+            {msg.media && (
+                <img src={msg.media} alt="User Upload" className="max-w-full rounded-md mb-2 object-cover border border-white/10" />
+            )}
+            {msg.content && (
+                <ReactMarkdown components={markdownComponents}>
+                    {msg.content}
+                </ReactMarkdown>
+            )}
+        </div>
+    );
+});
+
 export function SaigonsoftBot() {
     const pathname = usePathname();
     const { isOpen, setIsOpen, messages, addMessage, setMessages, hasInitialized, setHasInitialized, clearSession } = useChatBotStore();
     const [input, setInput] = useState('');
+    const [selectedImage, setSelectedImage] = useState<string | null>(null);
+    const [isCompressing, setIsCompressing] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
     const scrollRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Auto-focus input when chat opens or finishes loading
     useEffect(() => {
@@ -70,15 +118,63 @@ export function SaigonsoftBot() {
         }
     }, [messages, isLoading]);
 
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        
+        setIsCompressing(true);
+        try {
+            const compressedBase64 = await new Promise<string>((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        let { width, height } = img;
+                        const maxDim = 800; // Optimal for Gemini Vision and local storage safety
+                        
+                        if (width > height && width > maxDim) {
+                            height *= maxDim / width;
+                            width = maxDim;
+                        } else if (height > maxDim) {
+                            width *= maxDim / height;
+                            height = maxDim;
+                        }
+                        
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        if (!ctx) return reject('No canvas context');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        resolve(canvas.toDataURL('image/jpeg', 0.6)); // High compression
+                    };
+                    img.onerror = reject;
+                    img.src = event.target?.result as string;
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+            setSelectedImage(compressedBase64);
+        } catch (err) {
+            console.error('Failed to compress image:', err);
+            alert('Không thể xử lý hình ảnh này.');
+        } finally {
+            setIsCompressing(false);
+            if (fileInputRef.current) fileInputRef.current.value = '';
+        }
+    };
+
     const handleSend = async () => {
-        if (!input.trim() || isLoading) return;
+        if ((!input.trim() && !selectedImage) || isLoading || isCompressing) return;
 
         const userMsg = input.trim();
+        const attachedImg = selectedImage;
         setInput('');
+        setSelectedImage(null);
         
         const updatedHistory: StoreChatMessage[] = [
             ...messages,
-            { role: 'user', content: userMsg }
+            { role: 'user', content: userMsg || 'Xin hãy giải thích hình ảnh này.', media: attachedImg || undefined }
         ];
         
         setMessages(updatedHistory);
@@ -120,15 +216,15 @@ export function SaigonsoftBot() {
     }
 
     return (
-        <div className="fixed bottom-6 right-6 z-50">
+        <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[60]">
             {isOpen ? (
-                <Card className={`shadow-2xl flex flex-col border-primary/20 overflow-hidden !rounded-2xl origin-bottom-right animate-in zoom-in-95 fade-in slide-in-from-bottom-4 duration-300 transition-all ${
+                <Card className={`shadow-2xl flex flex-col border-primary/20 overflow-hidden sm:!rounded-2xl origin-bottom-right animate-in zoom-in-95 fade-in slide-in-from-bottom-4 duration-300 transition-all fixed inset-0 z-[60] w-full h-[100dvh] rounded-none sm:relative sm:inset-auto sm:z-auto sm:rounded-2xl ${
                     isExpanded 
-                        ? 'w-[90vw] sm:w-[700px] h-[80vh] max-h-[800px]' 
-                        : 'w-[350px] sm:w-[420px] h-[550px]'
+                        ? 'sm:w-[700px] sm:h-[80vh] sm:max-h-[800px]' 
+                        : 'sm:w-[420px] sm:h-[600px]'
                 }`}>
-                    <CardHeader className="p-4 bg-primary text-primary-foreground flex flex-row items-center justify-between rounded-t-2xl space-y-0 relative shrink-0">
-                         <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600 opacity-90 rounded-t-2xl pointer-events-none" />
+                    <CardHeader className="p-4 bg-primary text-primary-foreground flex flex-row items-center justify-between sm:rounded-t-2xl space-y-0 relative shrink-0">
+                         <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600 opacity-90 sm:rounded-t-2xl pointer-events-none" />
                          <div className="relative z-10 flex items-center gap-3">
                             <div className="bg-white/20 p-2 rounded-full backdrop-blur-sm">
                                 <Bot className="w-5 h-5 text-white" />
@@ -156,7 +252,7 @@ export function SaigonsoftBot() {
                                 variant="ghost" 
                                 size="icon" 
                                 title={isExpanded ? "Thu nhỏ" : "Phóng to"}
-                                className="relative z-10 text-white hover:bg-white/20 hover:text-white rounded-full h-8 w-8 mr-1"
+                                className="relative z-10 text-white hover:bg-white/20 hover:text-white rounded-full h-8 w-8 mr-1 hidden sm:flex"
                                 onClick={() => setIsExpanded(!isExpanded)}
                             >
                                 {isExpanded ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
@@ -187,45 +283,7 @@ export function SaigonsoftBot() {
                                             </Avatar>
                                         )}
                                         
-                                        <div className={`
-                                            p-3 rounded-2xl max-w-[85%] break-words leading-relaxed shadow-sm
-                                            ${msg.role === 'user' 
-                                                ? 'bg-primary text-primary-foreground rounded-tr-sm' 
-                                                : 'bg-white border text-foreground rounded-tl-sm'}
-                                        `}>
-                                            <ReactMarkdown 
-                                                components={{
-                                                    p: ({node, ...props}) => <p className="mb-2 last:mb-0" {...props} />,
-                                                    strong: ({node, ...props}) => <strong className="font-semibold" {...props} />,
-                                                    ul: ({node, ...props}) => <ul className="list-disc pl-5 my-2 space-y-1" {...props} />,
-                                                    ol: ({node, ...props}) => <ol className="list-decimal pl-5 my-2 space-y-1" {...props} />,
-                                                    li: ({node, ...props}) => <li className="pl-1" {...props} />,
-                                                    a: ({node, href, ...props}) => {
-                                                        let finalHref = href || '#';
-                                                        
-                                                        // Ensure AI links to our store always use relative routing to correctly map Localhost/Production
-                                                        try {
-                                                            const url = new URL(finalHref);
-                                                            if (url.hostname.toLowerCase().includes('saigonsoft') || 
-                                                                url.hostname.includes('localhost') || 
-                                                                url.hostname.includes('127.0.0.1')) {
-                                                                finalHref = url.pathname + url.search + url.hash;
-                                                            }
-                                                        } catch(e) {}
-                                                        
-                                                        // Ensure it's treated as a relative path if it starts with a slash
-                                                        if (finalHref.startsWith('/')) {
-                                                            return <Link href={finalHref} onClick={() => setIsOpen(false)} className="text-blue-600 hover:text-blue-800 underline underline-offset-2 font-medium" {...props as any} />
-                                                        }
-                                                        
-                                                        // External links (like mailto or Microsoft) also open in current tab per user request
-                                                        return <a href={finalHref} onClick={() => setIsOpen(false)} className="text-blue-600 hover:text-blue-800 underline underline-offset-2 font-medium" {...props} />
-                                                    },
-                                                }}
-                                            >
-                                                {msg.content}
-                                            </ReactMarkdown>
-                                        </div>
+                                        <ChatBubble msg={msg} />
                                     </div>
                                 ))}
 
@@ -245,11 +303,44 @@ export function SaigonsoftBot() {
                         </ScrollArea>
                     </CardContent>
                     
-                    <CardFooter className="p-3 bg-white border-t rounded-b-xl dark:bg-slate-950">
+                    <CardFooter className="p-3 pb-4 bg-white border-t rounded-b-xl dark:bg-slate-950 flex flex-col gap-2 relative">
+                        {/* Preview Image Box */}
+                        {selectedImage && (
+                            <div className="w-full flex items-start gap-2 relative animate-in fade-in slide-in-from-bottom-2 duration-300">
+                                <div className="relative inline-block border rounded-md overflow-hidden bg-slate-100 dark:bg-slate-900 group shadow-sm">
+                                    <img src={selectedImage} alt="Preview" className="h-[72px] w-auto object-cover opacity-90 transition-opacity group-hover:opacity-100" />
+                                    <button 
+                                        type="button"
+                                        onClick={() => setSelectedImage(null)}
+                                        className="absolute top-1 right-1 bg-black/50 text-white rounded-full p-1 hover:bg-black/80 transition shadow-sm backdrop-blur-sm"
+                                    >
+                                        <X className="w-3 h-3" />
+                                    </button>
+                                </div>
+                            </div>
+                        )}
                         <div className="flex w-full items-center gap-2">
+                            <input 
+                                type="file" 
+                                ref={fileInputRef} 
+                                accept="image/*" 
+                                className="hidden" 
+                                onChange={handleImageUpload} 
+                            />
+                            <Button
+                                variant="outline"
+                                size="icon"
+                                className="rounded-full shrink-0 border-muted-foreground/20 bg-slate-50 dark:bg-slate-900 hover:bg-slate-200"
+                                onClick={() => fileInputRef.current?.click()}
+                                disabled={isLoading || isCompressing}
+                                title="Đính kèm hình ảnh"
+                            >
+                                <ImageIcon className="h-4 w-4 text-slate-500" />
+                            </Button>
+
                             <Input 
                                 ref={inputRef}
-                                placeholder="Nhập câu hỏi của bạn..." 
+                                placeholder={selectedImage ? "Nhập yêu cầu cho ảnh này..." : "Nhập câu hỏi của bạn..."} 
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
                                 onKeyDown={handleKeyDown}
@@ -258,11 +349,11 @@ export function SaigonsoftBot() {
                             />
                             <Button 
                                 size="icon" 
-                                disabled={!input.trim() || isLoading} 
+                                disabled={(!input.trim() && !selectedImage) || isLoading || isCompressing} 
                                 onClick={handleSend}
-                                className="rounded-full shadow-md bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 transition-all"
+                                className="rounded-full shadow-md shrink-0 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 transition-all font-medium"
                             >
-                                <Send className="h-4 w-4" />
+                                {isCompressing ? <LoaderCircle className="h-4 w-4 animate-spin text-white" /> : <Send className="h-4 w-4" />}
                             </Button>
                         </div>
                     </CardFooter>

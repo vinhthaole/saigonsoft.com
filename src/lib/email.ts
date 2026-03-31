@@ -48,7 +48,7 @@ export async function sendBulkEmail(
 
 function getBaseTemplate(config: SiteConfig, content: string) {
      const logoUrl = config.companyInfo?.logoUrl || config.header.logoDarkUrl;
-     const companyName = config.companyInfo?.name || 'Saigonsoft.com';
+     const companyName = 'Saigonsoft';
      const companyAddress = config.companyInfo?.address || '';
 
      return `
@@ -226,7 +226,7 @@ export async function sendStockSubscriptionConfirmationEmail(payload: {
     const { email, productName, variantName } = payload;
     const config = await getSiteConfig();
     
-    const subject = `Xác nhận đăng ký nhận thông báo - ${config.companyInfo.name || 'Saigonsoft'}`;
+    const subject = `Xác nhận đăng ký nhận thông báo - Saigonsoft`;
     const friendlyVariant = variantName.toLowerCase() === 'mặc định' ? '' : ` (${variantName})`;
     
     let body = `
@@ -237,7 +237,7 @@ export async function sendStockSubscriptionConfirmationEmail(payload: {
             <p style="margin: 0; font-weight: bold; font-size: 16px;">${productName}${friendlyVariant}</p>
         </div>
         <p>Ngay khi sản phẩm này có hàng trở lại, chúng tôi sẽ lập tức gửi email thông báo để bạn có thể đặt mua ngay.</p>
-        <p>Trân trọng,<br>Đội ngũ ${config.companyInfo.name || 'Saigonsoft'}</p>
+        <p>Trân trọng,<br>Đội ngũ Saigonsoft</p>
     `;
 
     const fullHtml = getBaseTemplate(config, body);

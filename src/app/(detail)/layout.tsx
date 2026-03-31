@@ -17,13 +17,13 @@ function Footer() {
     const config = useSiteConfig();
     const [columns, setColumns] = useState<FooterLinkColumn[]>([]);
     const [companyName, setCompanyName] = useState('Saigonsoft.com');
-    const [companyAddress, setCompanyAddress] = useState('');
+    const [footerContactHtml, setFooterContactHtml] = useState<string | null>(null);
 
     useEffect(() => {
         if (!config) return;
         if (config?.companyInfo) {
                 setCompanyName(config.companyInfo.name || 'Saigonsoft.com');
-                setCompanyAddress(config.companyInfo.address || '');
+                setFooterContactHtml(config.companyInfo.footerContactHtml || null);
             }
             let footerColumns = config?.footer?.linkColumns || [];
         
@@ -73,14 +73,26 @@ function Footer() {
             </div>
             <div className="mt-12 border-t pt-8 flex flex-col justify-between items-center text-xs text-muted-foreground gap-4">
                 <div className="flex flex-wrap gap-x-4 gap-y-2 justify-center">
-                    <Link href="/pages/contact" className="hover:underline">Liên hệ {companyName}</Link>
+                    <Link href="/pages/contact" className="hover:underline">Liên hệ</Link>
                     <Link href="/pages/privacy-policy" className="hover:underline">Quyền riêng tư</Link>
                     <Link href="/pages/terms-of-use" className="hover:underline">Điều khoản sử dụng</Link>
                     <Link href="/pages/trademarks" className="hover:underline">Thương hiệu</Link>
                 </div>
                 <p>&copy; {new Date().getFullYear()} {companyName}</p>
-                {companyAddress && <p className="max-w-md text-center">{companyAddress}</p>}
-                <p>SG e-Commerce Platform v1.2</p>
+                {footerContactHtml ? (
+                    <div 
+                        className="max-w-3xl text-center space-y-1.5 [&_p]:mb-1 [&_strong]:font-semibold [&_a]:text-blue-500 hover:[&_a]:underline"
+                        dangerouslySetInnerHTML={{ __html: footerContactHtml }} 
+                    />
+                ) : (
+                    <div className="max-w-3xl text-center space-y-1.5">
+                        <p><strong>Trụ sở:</strong> HIT GROUP COMPANY LIMITED, 72 Lê Thánh Tôn, P. Sài Gòn – L17-11</p>
+                        <p><strong>GPKD:</strong> HIT GROUP COMPANY LIMITED, Tầng 5, 382/17-19 Nguyễn Thị Minh Khai, P. Bàn Cờ</p>
+                        <p><strong>ioT Quản trị:</strong> SGS HK Limited, Enterprise Centre, 百利商業中心 100 Chatham Rd Hongkong</p>
+                        <p><strong>CSKH:</strong> 0888.089.688 – <strong>Email:</strong> sales@saigonsoft.com</p>
+                    </div>
+                )}
+                <p className="mt-2 opacity-60">SG e-Commerce Platform v1.2</p>
             </div>
             </div>
         </footer>

@@ -35,6 +35,12 @@ export const useChatBotStore = create<ChatBotState>()(
     {
       name: 'saigonsoft-chat-storage',
       storage: createJSONStorage(() => localStorage),
+      // Automatically strip heavy base64 image strings from LocalStorage.
+      // This ensures we never blow up the rigid 5MB browser quota after multiple chats.
+      partialize: (state) => ({
+          ...state,
+          messages: state.messages.map(({ media, ...rest }) => rest),
+      }),
     }
   )
 );

@@ -81,6 +81,7 @@ export interface Product {
   licenseType: 'Subscription' | 'Perpetual';
   shortDescription: string;
   longDescription: string;
+  videoUrl?: string;
   currency: 'VND';
   imageUrl: string;
   imageHint: string;
@@ -343,6 +344,7 @@ export interface SiteConfig {
         websiteUrl: string;
         taxCode?: string;
         logoUrl?: string;
+        footerContactHtml?: string;
     };
     hero: {
         backgroundType: '3d-grid' | 'image' | 'image-with-3d-overlay';

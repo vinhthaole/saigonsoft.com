@@ -42,10 +42,12 @@ const formSchema = z.object({
   imageUrl: z.string().url('URL hình ảnh không hợp lệ.').or(z.string().startsWith('data:image')).or(z.literal('')),
   imageHint: z.string().optional(),
   licenseType: z.enum(['Subscription', 'Perpetual']),
+  videoUrl: z.string().url('URL không hợp lệ').or(z.literal('')).optional(),
   screenshots: z.array(z.string().url('URL không hợp lệ nếu không phải chuỗi rỗng').or(z.string().startsWith('data:image')).or(z.literal(''))).optional(),
   variants: z.array(variantSchema).min(1, "Sản phẩm phải có ít nhất một biến thể."),
   seoTitle: z.string().optional(),
   seoDescription: z.string().optional(),
+  reviews: z.any().optional(),
 });
 
 
@@ -300,5 +302,32 @@ export async function deleteProducts(productIds: string[]) {
     } catch (error) {
         console.error("Failed to delete products:", error);
         throw new Error("Could not delete products.");
+    }
+}
+
+export async function generateProductDemoVideo(productName: string): Promise<{ videoUrl: string }> {
+    try {
+        const { getDynamicAi } = await import('@/ai/genkit');
+        const { ai, modelName } = await getDynamicAi();
+
+        const prompt = `Find a demo or tutorial YouTube video URL for the software product "${productName}". Return ONLY the raw youtube watch URL string, e.g. https://www.youtube.com/watch?v=.... Do NOT surround with markdown, quotes, or add any other text.`;
+
+        const response = await ai.generate({
+            model: modelName,
+            prompt: prompt,
+            config: {
+                temperature: 0.2,
+            }
+        });
+
+        const url = response.text.trim();
+        if (url && url.startsWith('http')) {
+            return { videoUrl: url };
+        }
+        return { videoUrl: '' };
+        
+    } catch (error) {
+        console.error("Error finding demo video:", error);
+        throw new Error("Failed to find demo video using AI.");
     }
 }

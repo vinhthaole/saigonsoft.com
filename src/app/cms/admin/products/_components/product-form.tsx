@@ -37,7 +37,7 @@ import { addProduct, updateProduct, generateProductVariants, generateProductDeta
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect, useMemo } from 'react';
-import { LoaderCircle, Sparkles, Eye, PlusCircle, Trash2 } from 'lucide-react';
+import { LoaderCircle, Sparkles, Eye, PlusCircle, Trash2, Loader2 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -78,6 +78,7 @@ const formSchema = z.object({
   imageUrl: z.string().url('URL hình ảnh không hợp lệ.').or(z.string().startsWith('data:image')).or(z.literal('')),
   imageHint: z.string().optional(),
   licenseType: z.enum(['Subscription', 'Perpetual']),
+  videoUrl: z.string().url('URL không hợp lệ').or(z.literal('')).optional(),
   screenshots: z.array(z.string().url('URL không hợp lệ nếu không phải chuỗi rỗng').or(z.string().startsWith('data:image')).or(z.literal(''))).optional(),
   variants: z.array(variantSchema).min(1, "Sản phẩm phải có ít nhất một biến thể."),
   seoTitle: z.string().optional(),
@@ -123,6 +124,7 @@ export function ProductForm({ initialData, categories, brands }: ProductFormProp
   const [isGeneratingScreenshots, setIsGeneratingScreenshots] = useState(false);
   const [isGeneratingVariants, setIsGeneratingVariants] = useState(false);
   const [isGeneratingSeo, setIsGeneratingSeo] = useState(false);
+  const [isGeneratingVideo, setIsGeneratingVideo] = useState(false);
   const [aiProductName, setAiProductName] = useState('');
   const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
   const [isLivePreviewOpen, setIsLivePreviewOpen] = useState(false);
@@ -158,6 +160,7 @@ export function ProductForm({ initialData, categories, brands }: ProductFormProp
       ? {
           ...initialData,
           categoryId: initialData.category.slug,
+          videoUrl: initialData.videoUrl || '',
           variants: initialData.variants?.map(v => ({ 
               ...v, 
               resellerPrice: v.resellerPrice ?? '',
@@ -184,6 +187,7 @@ export function ProductForm({ initialData, categories, brands }: ProductFormProp
           imageUrl: '',
           imageHint: 'software product box',
           licenseType: 'Subscription',
+          videoUrl: '',
           screenshots: ['', '', '', '', ''],
           variants: [{ id: nanoid(8), name: 'Mặc định', price: 0, resellerPrice: '', salePrice: '', sku: '', attributes: [] }],
           seoTitle: '',
@@ -242,7 +246,7 @@ export function ProductForm({ initialData, categories, brands }: ProductFormProp
       localStorage.removeItem(LOCAL_STORAGE_KEY);
       form.reset({
           name: '', slug: '', brand: '', categoryId: '', shortDescription: '', longDescription: '', mfr: '',
-          imageUrl: '', imageHint: 'software product box', licenseType: 'Subscription',
+          imageUrl: '', imageHint: 'software product box', licenseType: 'Subscription', videoUrl: '',
           screenshots: ['', '', '', '', ''],
           variants: [{ id: nanoid(8), name: 'Mặc định', price: 0, resellerPrice: '', salePrice: '', sku: '', attributes: [] }],
           seoTitle: '', seoDescription: '',
@@ -658,6 +662,57 @@ export function ProductForm({ initialData, categories, brands }: ProductFormProp
                             </FormControl>
                             <FormMessage />
                         </FormItem>
+                        )}
+                    />
+                    
+                     <FormField
+                        control={form.control}
+                        name="videoUrl"
+                        render={({ field }) => (
+                            <FormItem>
+                            <div className="flex items-center justify-between pb-2 pt-4 border-t mt-4">
+                                <FormLabel className="text-base">Đường dẫn Video Demo (Tùy chọn)</FormLabel>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={async () => {
+                                        setIsGeneratingVideo(true);
+                                        try {
+                                            const { generateProductDemoVideo } = await import('../actions');
+                                            const values = form.getValues();
+                                            const productNameInfo = `${values.brand || ''} ${values.name || ''}`.trim();
+                                            if (!productNameInfo) {
+                                                toast({ title: "Lỗi", description: "Vui lòng điền Tên sản phẩm và Thương hiệu trước khi tìm kiếm bằng AI.", variant: "destructive" });
+                                                return;
+                                            }
+                                            const result = await generateProductDemoVideo(productNameInfo);
+                                            form.setValue('videoUrl', result.videoUrl, { shouldValidate: true, shouldDirty: true });
+                                            toast({ title: "Tìm thấy Video AI!", description: "Đã điền tự động link Youtube vào khung.", variant: "default" });
+                                        } catch (error) {
+                                            console.error("Lỗi AI tìm video:", error);
+                                            toast({ title: "Có lỗi xảy ra", description: getFriendlyErrorMessage(error), variant: "destructive" });
+                                        } finally {
+                                            setIsGeneratingVideo(false);
+                                        }
+                                    }}
+                                    disabled={isGeneratingVideo}
+                                >
+                                    {isGeneratingVideo ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4 text-primary" />}
+                                    🪄 Tìm Video bằng AI
+                                </Button>
+                            </div>
+                            <FormControl>
+                                <Input
+                                    placeholder="https://www.youtube.com/watch?v=... hoặc link mp4/mp3"
+                                    {...field}
+                                />
+                            </FormControl>
+                            <FormDescription>
+                                AI sẽ tự lên Youtube tìm một link Hướng dẫn / Demo phù hợp nhất và điền vào đây. Khi hiển thị trên web, Logo Youtube sẽ được giấu kín.
+                            </FormDescription>
+                            <FormMessage />
+                            </FormItem>
                         )}
                     />
                 </CardContent>

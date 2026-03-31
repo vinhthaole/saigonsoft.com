@@ -23,6 +23,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, Info, Ban, CheckCircle } from 'lucide-react';
 import { ProductCard } from '@/components/product-card';
 import { ProductComparison } from '@/components/product-comparison';
+import { MediaPlayer } from '@/components/media-player';
 import {
     RadioGroup,
     RadioGroupItem,
@@ -71,6 +72,7 @@ export function ProductDetailClient({
   const [carouselApi, setCarouselApi] = useState<CarouselApi>();
   const [thumbCarouselApi, setThumbCarouselApi] = useState<CarouselApi>();
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(getDefaultVariant(product));
+  const [activeTab, setActiveTab] = useState<string>("description");
   const { formatPrice, _hasHydrated } = useCurrencyStore();
   const { userProfile } = useAuth();
 
@@ -346,13 +348,18 @@ export function ProductDetailClient({
 
       {/* Bottom section: Details and Reviews */}
       <div className="space-y-8">
-        <Tabs defaultValue="description" className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="description">Mô tả chi tiết</TabsTrigger>
             <TabsTrigger value="reviews">Đánh giá & Nhận xét</TabsTrigger>
             <TabsTrigger value="comparison">So sánh</TabsTrigger>
           </TabsList>
-          <TabsContent value="description" className="mt-6">
+          <TabsContent value="description" forceMount className="mt-6 data-[state=inactive]:hidden">
+            {product.videoUrl && (
+              <div className="mb-8 max-w-4xl mx-auto">
+                 <MediaPlayer url={product.videoUrl} autoPlay={true} isActive={activeTab === 'description'} />
+              </div>
+            )}
             <div className="prose prose-sm md:prose-base max-w-none text-foreground/80">
               <p>{product.longDescription}</p>
             </div>

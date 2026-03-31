@@ -29,6 +29,9 @@ import { updateAppearance } from '../actions';
 import type { SiteConfig } from '@/lib/types';
 import { Textarea } from '@/components/ui/textarea';
 import { FileUploader } from './file-uploader';
+import { RichTextEditor } from '@/components/ui/rich-text-editor';
+
+const DEFAULT_FOOTER_HTML = `<p><strong>Trụ sở:</strong> HIT GROUP COMPANY LIMITED, 72 Lê Thánh Tôn, P. Sài Gòn – L17-11</p><p><strong>GPKD:</strong> HIT GROUP COMPANY LIMITED, Tầng 5, 382/17-19 Nguyễn Thị Minh Khai, P. Bàn Cờ</p><p><strong>ioT Quản trị:</strong> SGS HK Limited, Enterprise Centre, 百利商業中心 100 Chatham Rd Hongkong</p><p><strong>CSKH:</strong> 0888.089.688 – <strong>Email:</strong> sales@saigonsoft.com</p>`;
 
 const companyInfoSchema = z.object({
   companyInfo: z.object({
@@ -40,6 +43,7 @@ const companyInfoSchema = z.object({
     address: z.string().optional(),
     taxCode: z.string().optional(),
     logoUrl: z.string().url('URL không hợp lệ').or(z.literal('')).optional(),
+    footerContactHtml: z.string().optional(),
   }),
 });
 
@@ -56,15 +60,16 @@ export function CompanyInfoForm({ initialData }: CompanyInfoFormProps) {
   const form = useForm<FormValues>({
     resolver: zodResolver(companyInfoSchema),
     defaultValues: {
-      companyInfo: initialData || {
-        name: '',
-        slogan: '',
-        email: '',
-        phone: '',
-        websiteUrl: '',
-        address: '',
-        taxCode: '',
-        logoUrl: '',
+      companyInfo: {
+        name: initialData?.name || '',
+        slogan: initialData?.slogan || '',
+        email: initialData?.email || '',
+        phone: initialData?.phone || '',
+        websiteUrl: initialData?.websiteUrl || '',
+        address: initialData?.address || '',
+        taxCode: initialData?.taxCode || '',
+        logoUrl: initialData?.logoUrl || '',
+        footerContactHtml: initialData?.footerContactHtml || DEFAULT_FOOTER_HTML,
       }
     },
   });
@@ -81,6 +86,7 @@ export function CompanyInfoForm({ initialData }: CompanyInfoFormProps) {
                 address: data.companyInfo.address || "",
                 taxCode: data.companyInfo.taxCode || "",
                 logoUrl: data.companyInfo.logoUrl || "",
+                footerContactHtml: data.companyInfo.footerContactHtml || "",
             }
         };
         await updateAppearance(processedData);
@@ -198,7 +204,7 @@ export function CompanyInfoForm({ initialData }: CompanyInfoFormProps) {
                 )}
                 />
             </div>
-             <FormField
+            <FormField
               control={form.control}
               name="companyInfo.websiteUrl"
               render={({ field }) => (
@@ -208,6 +214,27 @@ export function CompanyInfoForm({ initialData }: CompanyInfoFormProps) {
                   <FormControl><Input type="url" {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="companyInfo.footerContactHtml"
+              render={({ field }) => (
+                  <FormItem className="pt-4 border-t">
+                      <FormLabel>Khối thông tin Footer (Chân trang)</FormLabel>
+                      <FormDescription>
+                         Soạn thảo HTML tự do cho phần địa chỉ, thông tin Trụ sở, GPKD, hotline tại chân thẻ Footer.
+                         Có thể bôi đen chữ để chèn Link rút gọi cho nhóm Zalo/Telegram.
+                      </FormDescription>
+                      <FormControl>
+                          <RichTextEditor
+                              content={field.value || ''}
+                              onChange={field.onChange}
+                          />
+                      </FormControl>
+                      <FormMessage />
+                  </FormItem>
               )}
             />
           </CardContent>
